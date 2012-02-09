@@ -1,0 +1,83 @@
+This Django app contains the observation form for the Faulted Earth tool.
+
+To deploy this app you have to integrate it in geonode. Which is composed of:
+
+ * geonode (django framework)
+ * geoserver (the "mapserver" which provides all the layers/styling and mapping to db
+   tables and much more)
+ * a Client javascript app deployed through geoserver as a war
+
+
+DEPENDENCIES:
+
+    * django south
+    * django schemata
+
+        to be placed inside observations git repository and cloned from
+        https://github.com/tuttle/django-schemata -- this django "layer" is
+        necessary to have postgres' schema support in our django application
+
+        Once this https://code.djangoproject.com/ticket/6148 ticket will be
+        complete there will be no more need to use django-schemata, but this
+        ticket is a work in progress since a lot of time, so I have chosen the
+        django-schemata route.
+
+    * jpype
+    * opensha-lite.jar
+
+        to be placed in /usr/share/java
+
+INSTALLATION (rough instructions)
+
+If you are under Ubuntu follow:
+
+http://docs.geonode.org/en/latest/intro/install.html
+
+in /var/lib/geonode/src/GeoNodePy/geonode/ you should link the app, in this
+case "observations" in this way:
+
+    ln -s /location/of/observations/git /var/lib/geonode/src/GeoNodePy/geonode/observations
+
+you have to adapt/sync /var/lib/geonode/src/GeoNodePy/geonode/settings.py with
+the settings contained in /location/of/observations/git/geonode/settings.py
+
+at geoserver level you have to add a Workspace called geonode and associate a
+datastore that matches with the db you have specified in your settings.py or
+/etc/geonode/local_settings.py
+
+REBUILDING OF THE DB (quick&dirty script)
+
+create an fe-rebuild.sh script which will contain:
+
+#!/bin/bash
+export DB_NAME="geonode_fe_dev"
+dropdb $DB_NAME
+createdb $DB_NAME
+createlang plpgsql $DB_NAME
+psql -f /usr/share/postgresql/8.4/contrib/postgis-1.5/postgis.sql $DB_NAME
+psql -f /usr/share/postgresql/8.4/contrib/postgis-1.5/spatial_ref_sys.sql $DB_NAME
+# creates the schema[s]
+./manage.py manage_schemata
+# it's important to sync the database initially just to create the django "boilerplate",
+# authorization tables etc with syncdb plus the DJANGO_SCHEMATA_DOMAIN var
+export DJANGO_SCHEMATA_DOMAIN="django"
+./manage.py syncdb
+# this runs the migrations contained in observations/migrate
+./manage.py sync_schemata --migrate
+
+
+if you want to create a migration use south as usual, i.e.
+
+        python ./manage.py schemamigration observations --auto
+
+after changing your model[s]
+
+and then run:
+
+        python ./manage.py migrate_schemata observations
+
+the 'localhost' namespace will be run, and south will migrate the changes.
+
+*NOTE*: this README is a work in progress, so you can miss some bits here and
+there -- It will be updated as we streamline the process of deploying
+geonode/observations.
