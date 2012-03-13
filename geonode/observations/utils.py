@@ -103,7 +103,7 @@ def create_faultsource(fault, name):
     dip_min dip_max dip_pref dip_com dip_dir
     slip_typ slip_com slip_r_min slip_r_max slip_r_pre slip_r_com
     aseis_slip aseis_com created compiler all_com
-    mov_min mov_max mov_pref contrib 
+    mov_min mov_max mov_pref contrib strike
     """.strip().split()
 
     
