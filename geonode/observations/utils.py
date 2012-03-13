@@ -102,10 +102,11 @@ def create_faultsource(fault, name):
     low_d_min low_d_max low_d_pref low_d_com
     dip_min dip_max dip_pref dip_com dip_dir
     slip_typ slip_com slip_r_min slip_r_max slip_r_pre slip_r_com
-    aseis_slip aseis_com
-    mov_min mov_max mov_pref
+    aseis_slip aseis_com created compiler
+    mov_min mov_max mov_pref contrib
     """.strip().split()
 
+    
     a = dict((attrib_name, getattr(fault, attrib_name))
              for attrib_name in verbatim_attributes)
     a.update(dict(
