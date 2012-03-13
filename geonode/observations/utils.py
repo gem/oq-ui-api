@@ -104,7 +104,6 @@ def create_faultsource(fault, name):
     slip_typ slip_com slip_r_min slip_r_max slip_r_pre slip_r_com
     aseis_slip aseis_com created compiler
     mov_min mov_max mov_pref contrib
-    episodi_is episodi_ac down_thro
     """.strip().split()
 
     
