@@ -24,7 +24,7 @@ from django.contrib.gis.db import models
 
 class FaultSource(models.Model):
     fault = models.ForeignKey('Fault')
-    source_nm = models.CharField(max_length=30)
+    fault_name = models.CharField(max_length=30)
 
     length_min = models.FloatField(null=True, blank=True)
     length_max = models.FloatField(null=True, blank=True)
