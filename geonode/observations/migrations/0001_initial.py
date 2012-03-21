@@ -77,8 +77,8 @@ class Migration(SchemaMigration):
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
             ('contrib', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
-            ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')()),
-            ('created', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=4, decimal_places=3, blank=True)),
+            ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(dim=3)),
+            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
         ))
         db.send_create_signal('observations', ['FaultSource'])
 
@@ -126,7 +126,7 @@ class Migration(SchemaMigration):
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('contrib', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
-            ('created', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=4, decimal_places=3, blank=True)),
+            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('simple_geom', self.gf('django.contrib.gis.db.models.fields.MultiLineStringField')(null=True, blank=True)),
         ))
         db.send_create_signal('observations', ['Fault'])
@@ -175,7 +175,7 @@ class Migration(SchemaMigration):
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('contrib', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
-            ('created', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=4, decimal_places=3, blank=True)),
+            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
         ))
         db.send_create_signal('observations', ['FaultSection'])
 
@@ -292,7 +292,7 @@ class Migration(SchemaMigration):
             'aseis_slip': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '4', 'decimal_places': '3', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -339,7 +339,7 @@ class Migration(SchemaMigration):
             'aseis_slip': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '4', 'decimal_places': '3', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -389,7 +389,7 @@ class Migration(SchemaMigration):
             'aseis_slip': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'compiler': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'}),
             'contrib': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '4', 'decimal_places': '3', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
