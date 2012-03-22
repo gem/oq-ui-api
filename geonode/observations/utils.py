@@ -1,20 +1,21 @@
 # coding: utf-8
 #
-# Copyright (c) 2010-2012, GEM Foundation.
+# Copyright (c) 2010-2011, GEM Foundation.
 #
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
+# OpenQuake is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License version 3
+# only, as published by the Free Software Foundation.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
+# OpenQuake is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License version 3 for more details
+# (a copy is included in the LICENSE file that accompanied this code).
 #
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
-
+# You should have received a copy of the GNU Lesser General Public License
+# version 3 along with OpenQuake.  If not, see
+# <http://www.gnu.org/licenses/lgpl-3.0.txt> for a copy of the LGPLv3 License
+#
 
 import math
 
@@ -102,11 +103,10 @@ def create_faultsource(fault, name):
     low_d_min low_d_max low_d_pref low_d_com
     dip_min dip_max dip_pref dip_com dip_dir
     slip_typ slip_com slip_r_min slip_r_max slip_r_pre slip_r_com
-    aseis_slip aseis_com created compiler
-    mov_min mov_max mov_pref contrib fault_name
+    aseis_slip aseis_com
+    mov_min mov_max mov_pref
     """.strip().split()
 
-    
     a = dict((attrib_name, getattr(fault, attrib_name))
              for attrib_name in verbatim_attributes)
     a.update(dict(
@@ -156,3 +156,4 @@ def create_faultsource(fault, name):
     )
 
     return faultsource
+

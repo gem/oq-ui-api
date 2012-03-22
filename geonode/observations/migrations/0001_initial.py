@@ -1,20 +1,4 @@
 # encoding: utf-8
-
-# Copyright (c) 2010-2012, GEM Foundation.
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -28,6 +12,7 @@ class Migration(SchemaMigration):
         db.create_table('observations_faultsource', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('fault', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.Fault'])),
+            ('fault_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('source_nm', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('length_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('length_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -78,7 +63,7 @@ class Migration(SchemaMigration):
             ('compiler', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
             ('contrib', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
             ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(dim=3)),
-            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=4, decimal_places=3, blank=True)),
         ))
         db.send_create_signal('observations', ['FaultSource'])
 
@@ -126,7 +111,7 @@ class Migration(SchemaMigration):
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('contrib', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
-            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=4, decimal_places=3, blank=True)),
             ('simple_geom', self.gf('django.contrib.gis.db.models.fields.MultiLineStringField')(null=True, blank=True)),
         ))
         db.send_create_signal('observations', ['Fault'])
@@ -175,7 +160,7 @@ class Migration(SchemaMigration):
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('contrib', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
-            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=4, decimal_places=3, blank=True)),
         ))
         db.send_create_signal('observations', ['FaultSection'])
 
@@ -292,7 +277,7 @@ class Migration(SchemaMigration):
             'aseis_slip': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '4', 'decimal_places': '3', 'blank': 'True'}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -339,7 +324,7 @@ class Migration(SchemaMigration):
             'aseis_slip': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '4', 'decimal_places': '3', 'blank': 'True'}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -389,7 +374,7 @@ class Migration(SchemaMigration):
             'aseis_slip': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'compiler': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'}),
             'contrib': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'}),
-            'created': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '4', 'decimal_places': '3', 'blank': 'True'}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -484,3 +469,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['observations']
+
