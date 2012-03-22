@@ -108,8 +108,6 @@ def create_faultsource(fault, name):
     fault_name
     contrib
     compiler
-    episodi_is
-    episodi_ac
     """.strip().split()
 
     a = dict((attrib_name, getattr(fault, attrib_name))
