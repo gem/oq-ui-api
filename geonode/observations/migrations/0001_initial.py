@@ -10,12 +10,20 @@ class Migration(SchemaMigration):
         
         # Adding model 'FaultSource'
         db.create_table('observations_faultsource', (
+<<<<<<< HEAD
             ('mag_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mom_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mag_pref', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mag_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('dis_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mom_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+=======
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('fault', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.Fault'])),
+            ('fault_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('source_nm', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('length_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+>>>>>>> master
             ('length_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('contrib', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
             ('slip_typ', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
@@ -47,6 +55,7 @@ class Migration(SchemaMigration):
             ('re_int_max', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('re_int_pre', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
+<<<<<<< HEAD
             ('length_pre', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('width_pref', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
@@ -63,6 +72,11 @@ class Migration(SchemaMigration):
             ('low_d_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mov_min', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('slip_r_pre', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+=======
+            ('contrib', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
+            ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(dim=3)),
+            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+>>>>>>> master
         ))
         db.send_create_signal('observations', ['FaultSource'])
 
@@ -100,6 +114,7 @@ class Migration(SchemaMigration):
             ('re_int_min', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('re_int_pre', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+<<<<<<< HEAD
             ('length_pre', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('episodi_ac', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
@@ -111,6 +126,10 @@ class Migration(SchemaMigration):
             ('slip_r_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('low_d_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('slip_r_pre', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+=======
+            ('contrib', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+>>>>>>> master
             ('simple_geom', self.gf('django.contrib.gis.db.models.fields.MultiLineStringField')(null=True, blank=True)),
         ))
         db.send_create_signal('observations', ['Fault'])
@@ -148,6 +167,7 @@ class Migration(SchemaMigration):
             ('re_int_min', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('re_int_pre', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('compiler', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+<<<<<<< HEAD
             ('length_pre', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('episodi_ac', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
@@ -160,6 +180,10 @@ class Migration(SchemaMigration):
             ('slip_r_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('low_d_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('slip_r_pre', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+=======
+            ('contrib', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+>>>>>>> master
         ))
         db.send_create_signal('observations', ['FaultSection'])
 
@@ -663,3 +687,4 @@ class Migration(SchemaMigration):
     }
     
     complete_apps = ['observations']
+
