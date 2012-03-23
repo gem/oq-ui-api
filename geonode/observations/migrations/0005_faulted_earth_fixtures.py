@@ -173,7 +173,7 @@ class Migration(DataMigration):
             'slip_r_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'slip_r_pre': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'slip_typ': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'}),
-            'source_nm': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'u_sm_d_com': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'u_sm_d_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'u_sm_d_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
