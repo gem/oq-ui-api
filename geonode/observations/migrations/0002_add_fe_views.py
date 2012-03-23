@@ -204,165 +204,12 @@ SET
 WHERE
     id = OLD.id;
         """)
-        
-        # folds
-        
-        # fold section view
-        db.execute("""CREATE VIEW gem.fold_section_view AS
-SELECT
-    observations_foldsection.id, observations_foldsection.sec_name,
-    observations_foldsection.length_min, observations_foldsection.length_max,
-    observations_foldsection.length_pre,
-    observations_foldsection.episodi_is, observations_foldsection.episodi_ac,
-    observations_foldsection.fold_type, observations_foldsection.symmetry,
-    observations_foldsection.asymm_dir, observations_foldsection.dip_axial,
-    observations_foldsection.dip_limbs, observations_foldsection.plunge,
-    observations_foldsection.tilt_rate, observations_foldsection.growth_vert,
-    observations_foldsection.growth_hori, observations_foldsection.surf_age,
-    observations_foldsection.mov_min,
-    observations_foldsection.mov_max, observations_foldsection.mov_pref,
-    observations_foldsection.all_com, observations_foldsection.compiler,
-    observations_foldsection.contrib, observations_foldsection.created,
-    ST_Multi(ST_Union(observations_foldtrace.geom)) as geom
-FROM gem.observations_foldsection
-JOIN gem.observations_foldtrace_fold_section ON observations_foldsection.id = observations_foldtrace_fold_section.foldsection_id
-JOIN gem.observations_foldtrace ON observations_foldtrace_fold_section.foldtrace_id = observations_foldtrace.id
-GROUP BY
-    observations_foldsection.id, observations_foldsection.sec_name,
-    observations_foldsection.length_min, observations_foldsection.length_max,
-    observations_foldsection.length_pre,
-    observations_foldsection.episodi_is, observations_foldsection.episodi_ac,
-    observations_foldsection.fold_type, observations_foldsection.symmetry,
-    observations_foldsection.asymm_dir, observations_foldsection.dip_axial,
-    observations_foldsection.dip_limbs, observations_foldsection.plunge,
-    observations_foldsection.tilt_rate, observations_foldsection.growth_vert,
-    observations_foldsection.growth_hori, observations_foldsection.surf_age,
-    observations_foldsection.mov_min,
-    observations_foldsection.mov_max, observations_foldsection.mov_pref,
-    observations_foldsection.all_com, observations_foldsection.compiler,
-    observations_foldsection.contrib, observations_foldsection.created;
-""")
-        # fold section view update rule
-        db.execute("""
-CREATE RULE
-    fold_section_view_update
-AS ON UPDATE TO
-    gem.fold_section_view
-DO INSTEAD
-UPDATE
-    gem.observations_foldsection
-SET
-    sec_name = NEW.sec_name,
-    length_min = NEW.length_min, length_max = NEW.length_max,
-    length_pre = NEW.length_pre,
-    episodi_is = NEW.episodi_is, episodi_ac = NEW.episodi_ac,
-    fold_type = NEW.fold_type, symmetry = NEW.symmetry,
-    asymm_dir = NEW.asymm_dir, dip_axial = NEW.dip_axial,
-    dip_limbs = NEW.dip_limbs, plunge = NEW.plunge,
-    tilt_rate = NEW.tilt_rate, growth_vert = NEW.growth_vert,
-    growth_hori = NEW.growth_hori, surf_age = NEW.surf_age,
-    mov_min = NEW.mov_min,
-    mov_max = NEW.mov_max, mov_pref = NEW.mov_pref,
-    all_com = NEW.all_com, compiler = NEW.compiler,
-    contrib = NEW.contrib, created = NEW.created
-WHERE
-    id = OLD.id;
-""")
 
-        # fold view
-        db.execute("""CREATE VIEW gem.fold_view AS
-SELECT observations_fold.id, observations_fold.aseis_slip,
-    observations_fold.fold_name, observations_fold.length_min,
-    observations_fold.length_max, observations_fold.length_pre,
-    observations_fold.strike, observations_fold.episodi_is,
-    observations_fold.episodi_ac, observations_fold.u_sm_d_min,
-    observations_fold.u_sm_d_max, observations_fold.u_sm_d_pre,
-    observations_fold.u_sm_d_com, observations_fold.low_d_min,
-    observations_fold.low_d_max, observations_fold.low_d_pref,
-    observations_fold.low_d_com, observations_fold.dip_min,
-    observations_fold.dip_max, observations_fold.dip_pref,
-    observations_fold.dip_com, observations_fold.dip_dir,
-    observations_fold.asymm_dir, observations_fold.slip_typ,
-    observations_fold.fold_type, observations_fold.symmetry,
-    observations_fold.slip_com, observations_fold.slip_r_min,
-    observations_fold.slip_r_max, observations_fold.slip_r_pre,
-    observations_fold.slip_r_com, observations_fold.re_int_min,
-    observations_fold.re_int_max, observations_fold.re_int_pre,
-    observations_fold.all_com, observations_fold.compiler,
-    observations_fold.contrib, observations_fold.created,
-    St_Multi(St_Union(observations_foldtrace.geom)) as geom
-FROM gem.observations_fold
-JOIN gem.observations_foldsection_fold ON
-observations_fold.id = observations_foldsection_fold.fold_id
-JOIN gem.observations_foldsection ON observations_foldsection.id =
-observations_foldsection_fold.foldsection_id
-JOIN gem.observations_foldtrace_fold_section ON gem.observations_foldsection.id = observations_foldtrace_fold_section.foldsection_id
-JOIN gem.observations_foldtrace ON gem.observations_foldtrace.id = observations_foldtrace_fold_section.foldtrace_id
-GROUP BY
-    observations_fold.id, observations_fold.aseis_slip,
-        observations_fold.fold_name, observations_fold.length_min,
-        observations_fold.length_max, observations_fold.length_pre,
-        observations_fold.strike, observations_fold.episodi_is,
-        observations_fold.episodi_ac, observations_fold.u_sm_d_min,
-        observations_fold.u_sm_d_max, observations_fold.u_sm_d_pre,
-        observations_fold.u_sm_d_com, observations_fold.low_d_min,
-        observations_fold.low_d_max, observations_fold.low_d_pref,
-        observations_fold.low_d_com, observations_fold.dip_min,
-        observations_fold.dip_max, observations_fold.dip_pref,
-        observations_fold.dip_com, observations_fold.dip_dir,
-        observations_fold.asymm_dir, observations_fold.slip_typ,
-        observations_fold.fold_type, observations_fold.symmetry,
-        observations_fold.slip_com, observations_fold.slip_r_min,
-        observations_fold.slip_r_max, observations_fold.slip_r_pre,
-        observations_fold.slip_r_com, observations_fold.re_int_min,
-        observations_fold.re_int_max, observations_fold.re_int_pre,
-        observations_fold.all_com, observations_fold.compiler,
-        observations_fold.contrib, observations_fold.created""")
-        
-        # fold view update rule
-        db.execute("""
-CREATE RULE
-    fold_view_update
-AS ON UPDATE TO
-    gem.fold_view
-DO INSTEAD
-UPDATE
-    gem.observations_fold
-SET
-    fold_name = NEW.fold_name, length_min = NEW.length_min,
-    length_max = NEW.length_max, length_pre = NEW.length_pre,
-    strike = NEW.strike, episodi_is = NEW.episodi_is,
-    episodi_ac = NEW.episodi_ac, u_sm_d_min = NEW.u_sm_d_min,
-    u_sm_d_max = NEW.u_sm_d_max, u_sm_d_pre = NEW.u_sm_d_pre,
-    u_sm_d_com = NEW.u_sm_d_com, low_d_min = NEW.low_d_min,
-    low_d_max = NEW.low_d_max, low_d_pref = NEW.low_d_pref,
-    low_d_com = NEW.low_d_com, dip_min = NEW.dip_min,
-    dip_max = NEW.dip_max, dip_pref = NEW.dip_pref,
-    dip_com = NEW.dip_com, dip_dir = NEW.dip_dir,
-    fold_type = NEW.fold_type, symmetry = NEW.symmetry,
-    asymm_dir = NEW.asymm_dir, slip_typ = NEW.slip_typ,
-    slip_com = NEW.slip_com, slip_r_min = NEW.slip_r_min,
-    slip_r_max = NEW.slip_r_max, slip_r_pre = NEW.slip_r_pre,
-    slip_r_com = NEW.slip_r_com, aseis_slip = NEW.aseis_slip, 
-    re_int_min = NEW.re_int_min, 
-    re_int_max = NEW.re_int_max, re_int_pre = NEW.re_int_pre, 
-    all_com = NEW.all_com, compiler = NEW.compiler,
-    contrib = NEW.contrib, created = NEW.created
-WHERE
-    id = OLD.id;
-        """)
-    
         # simple geometry view
 
         db.execute("""CREATE VIEW gem.simple_geom_view AS
                  SELECT f.id, f.fault_name, f.simple_geom
                  FROM gem.observations_fault f""")
-        
-         # fold simple geometry view
-
-        db.execute("""CREATE VIEW gem.simple_fold_geom_view AS
-                  SELECT g.id, g.fold_name, g.simple_fold_geom
-                  FROM gem.observations_fold g""")
 
         # "publish" the geometries into public.geometry_columns
         db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
@@ -370,19 +217,9 @@ WHERE
 
         db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
         'fault_view', 'geom', 2, 4326, 'MULTILINESTRING')""")
-        
-        db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
-        'fold_view', 'geom', 2, 4326, 'MULTILINESTRING')""")
-        
-        db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
-        'fold_section_view', 'geom', 2, 4326, 'MULTILINESTRING')""")
 
         db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
                 'simple_geom_view', 'simple_geom', '2', 4326,
-                'MULTILINESTRING')""")
-                
-        db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
-                'simple_fold_geom_view', 'simple_fold_geom', '2', 4326,
                 'MULTILINESTRING')""")
 
 
@@ -390,9 +227,6 @@ WHERE
         db.execute("DROP VIEW fault_section_view")
         db.execute("DROP VIEW fault_view")
         db.execute("DROP VIEW simple_geom_view")
-        db.execute("DROP VIEW fold_section_view")
-        db.execute("DROP VIEW fold_view")
-        db.execute("DROP VIEW simple_fold_geom_view")
 
 
     models = {
@@ -403,7 +237,7 @@ WHERE
             'aseis_slip': ('django.db.models.fields.FloatField', [], {}),
             'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'max_digits': '4', 'decimal_places': '3'}),
+            'created': ('django.db.models.fields.DateField', [], {}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {}),
@@ -449,7 +283,7 @@ WHERE
             'aseis_slip': ('django.db.models.fields.FloatField', [], {}),
             'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'max_digits': '4', 'decimal_places': '3'}),
+            'created': ('django.db.models.fields.DateField', [], {}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {}),
@@ -497,7 +331,7 @@ WHERE
             'aseis_slip': ('django.db.models.fields.FloatField', [], {}),
             'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'max_digits': '4', 'decimal_places': '3'}),
+            'created': ('django.db.models.fields.DateField', [], {}),
             'dip_com': ('django.db.models.fields.IntegerField', [], {}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {}),
             'dip_max': ('django.db.models.fields.IntegerField', [], {}),
@@ -595,78 +429,6 @@ WHERE
             'notes': ('django.db.models.fields.TextField', [], {}),
             'scale': ('django.db.models.fields.BigIntegerField', [], {}),
             'tid': ('django.db.models.fields.IntegerField', [], {})
-        },
-        'observations.foldsection': {
-            'Meta': {'object_name': 'FoldSection'},
-            'all_com': ('django.db.models.fields.IntegerField', [], {}),
-            'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'max_digits': '4', 'decimal_places': '3'}),
-            'dip_limbs': ('django.db.models.fields.IntegerField', [], {}),
-            'dip_axial': ('django.db.models.fields.IntegerField', [], {}),
-            'episodi_ac': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'episodi_is': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'sec_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'length_max': ('django.db.models.fields.FloatField', [], {}),
-            'length_min': ('django.db.models.fields.FloatField', [], {}),
-            'length_pre': ('django.db.models.fields.FloatField', [], {}),
-            'fold_type': ('django.db.models.fields.CharField', [], {}),
-            'symmetry' : ('django.db.models.fields.CharField', [], {}),
-            'dip_axial': ('django.db.models.fields.IntegerField', [], {}),
-            'dip_limbs': ('django.db.models.fields.IntegerField', [], {}),
-            'plunge': ('django.db.models.fields.IntegerField', [], {}),
-            'tilt_rate': ('django.db.models.fields.IntegerField', [], {}),
-            'growth_vert': ('django.db.models.fields.IntegerField', [], {}),
-            'growth_hori': ('django.db.models.fields.IntegerField', [], {}),
-            'surf_age': ('django.db.models.fields.IntegerField', [], {}),
-            'mov_min': ('django.db.models.fields.IntegerField', [], {}),
-            'mov_max': ('django.db.models.fields.IntegerField', [], {}),
-            'mov_pref': ('django.db.models.fields.IntegerField', [], {}),
-        },
-        'observations.fold': {
-            'Meta': {'object_name': 'Fold'},
-            'all_com': ('django.db.models.fields.IntegerField', [], {}),
-            'aseis_com': ('django.db.models.fields.IntegerField', [], {}),
-            'aseis_slip': ('django.db.models.fields.FloatField', [], {}),
-            'compiler': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'contrib': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'created': ('django.db.models.fields.DecimalField', [], {'max_digits': '4', 'decimal_places': '3'}),
-            'dip_com': ('django.db.models.fields.IntegerField', [], {}),
-            'dip_dir': ('django.db.models.fields.IntegerField', [], {}),
-            'dip_max': ('django.db.models.fields.IntegerField', [], {}),
-            'dip_min': ('django.db.models.fields.IntegerField', [], {}),
-            'dip_pref': ('django.db.models.fields.IntegerField', [], {}),
-            'dis_max': ('django.db.models.fields.FloatField', [], {}),
-            'dis_min': ('django.db.models.fields.FloatField', [], {}),
-            'episodi_ac': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'episodi_is': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'fold_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'length_max': ('django.db.models.fields.FloatField', [], {}),
-            'length_min': ('django.db.models.fields.FloatField', [], {}),
-            'length_pre': ('django.db.models.fields.FloatField', [], {}),
-            'low_d_com': ('django.db.models.fields.FloatField', [], {}),
-            'low_d_max': ('django.db.models.fields.FloatField', [], {}),
-            'low_d_min': ('django.db.models.fields.FloatField', [], {}),
-            'low_d_pref': ('django.db.models.fields.FloatField', [], {}),
-            're_int_max': ('django.db.models.fields.IntegerField', [], {}),
-            're_int_min': ('django.db.models.fields.IntegerField', [], {}),
-            're_int_pre': ('django.db.models.fields.IntegerField', [], {}),
-            'slip_com': ('django.db.models.fields.IntegerField', [], {}),
-            'slip_r_com': ('django.db.models.fields.IntegerField', [], {}),
-            'slip_r_max': ('django.db.models.fields.IntegerField', [], {}),
-            'slip_r_min': ('django.db.models.fields.IntegerField', [], {}),
-            'slip_r_pre': ('django.db.models.fields.IntegerField', [], {}),
-            'slip_typ': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'strike': ('django.db.models.fields.IntegerField', [], {}),
-            'u_sm_d_com': ('django.db.models.fields.FloatField', [], {}),
-            'u_sm_d_max': ('django.db.models.fields.FloatField', [], {}),
-            'u_sm_d_min': ('django.db.models.fields.FloatField', [], {}),
-            'u_sm_d_pre': ('django.db.models.fields.FloatField', [], {}),
-            'fold_type': ('django.db.models.fields.CharField', [], {}),
-            'symmetry' : ('django.db.models.fields.CharField', [], {}),
-            'asymm_dir': ('django.db.models.fields.CharField', [], {}),
         },
     }
 

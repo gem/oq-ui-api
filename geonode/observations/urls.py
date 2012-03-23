@@ -26,7 +26,5 @@ urlpatterns = patterns('geonode.observations.views',
    (r'^traces/join$', 'traces'),
    (r'^faultsection/join$', 'faultsection'),
    (r'^faultsource/create$', 'faultsource'),
-   (r'^foldtraces/join$', 'foldtraces'),
-   (r'^foldsection/join$', 'foldsection'),
    (r'^faultsource/export$', 'export'),
 )
