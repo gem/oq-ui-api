@@ -89,50 +89,6 @@ def faultsection(request):
 
     return response
 
-def foldsection(request):
-    response = HttpResponse()
-    if request.method == 'PUT':
-
-        json_data = request.raw_post_data
-
-        fold = models.Fold.objects.create()
-
-        for fold_section in simplejson.loads(json_data):
-            if isinstance(fold_section, dict):
-                fold.fold_name = fold_section['name']
-            else:
-                fold_section = models.FoldSection.objects.get(
-                        pk=fold_section)
-                fold_section.fold.add(fold)
-
-        fold.save()
-
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM set_fold_simplegeom(%s)", [fold.pk])
-    transaction.commit_unless_managed()
-
-    return response
-    
-def foldtraces(request):
-
-    response = HttpResponse()
-    if request.method == 'PUT':
-
-        json_data = request.raw_post_data
-
-        fold_section = models.FoldSection.objects.create()
-
-        for foldtrace in simplejson.loads(json_data):
-            if isinstance(foldtrace, dict):
-                fold_section.sec_name = foldtrace['name']
-            else:
-                foldtrace = models.FoldTrace.objects.get(pk=foldtrace.split('.')[1])
-                foldtrace.fold_section.add(fold_section)
-
-        fold_section.save()
-
-
-    return response
 
 def faultsource(request):
     if request.method == 'PUT':
