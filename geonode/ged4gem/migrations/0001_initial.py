@@ -10,11 +10,11 @@ class Migration(SchemaMigration):
         
         # Adding model 'gadm_country_facts'
         db.create_table('ged4gem_gadm_country_facts', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('gedid', self.gf('django.db.models.fields.IntegerField')()),
             ('building_area', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('populated_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('gedid', self.gf('django.db.models.fields.IntegerField')()),
             ('people_dwelling', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('num_buildings', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('gadm_country_id', self.gf('django.db.models.fields.IntegerField')()),
