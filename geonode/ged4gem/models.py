@@ -22,7 +22,6 @@ from django.contrib.gis.db import models
 #ged4gem table
 
 class gadm_country_facts_00(models.Model):
-    gedid = models.IntegerField()
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
     gadm_country_alias = models.CharField(max_length=30)
@@ -49,7 +48,6 @@ class gadm_country_facts_00(models.Model):
 
 
 class gadm_country_facts_05(models.Model):
-    gedid = models.IntegerField()
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
     gadm_country_alias = models.CharField(max_length=30)
@@ -76,7 +74,6 @@ class gadm_country_facts_05(models.Model):
 
 
 class gadm_country_facts_10(models.Model):
-    gedid = models.IntegerField()
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
     gadm_country_alias = models.CharField(max_length=30)
@@ -103,7 +100,6 @@ class gadm_country_facts_10(models.Model):
 
 
 class gadm_country_facts_90(models.Model):
-    gedid = models.IntegerField()
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
     gadm_country_alias = models.CharField(max_length=30)
@@ -130,7 +126,6 @@ class gadm_country_facts_90(models.Model):
 
 
 class gadm_country_facts_95(models.Model):
-    gedid = models.IntegerField()
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
     gadm_country_alias = models.CharField(max_length=30)
