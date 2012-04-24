@@ -24,7 +24,7 @@ from django.contrib.gis.db import models
 class gadm_country_facts_00(models.Model):
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
-    gadm_country_alias = models.CharField(max_length=30)
+    gadm_country_alias = models.CharField(null=True, max_length=30)
     gadm_country_iso = models.CharField(max_length=3)
     gadm_country_shape_perimeter = models.FloatField()
     gadm_country_shape_area = models.FloatField()
@@ -50,7 +50,7 @@ class gadm_country_facts_00(models.Model):
 class gadm_country_facts_05(models.Model):
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
-    gadm_country_alias = models.CharField(max_length=30)
+    gadm_country_alias = models.CharField(null=True, max_length=30)
     gadm_country_iso = models.CharField(max_length=3)
     gadm_country_shape_perimeter = models.FloatField()
     gadm_country_shape_area = models.FloatField()
@@ -76,7 +76,7 @@ class gadm_country_facts_05(models.Model):
 class gadm_country_facts_10(models.Model):
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
-    gadm_country_alias = models.CharField(max_length=30)
+    gadm_country_alias = models.CharField(null=True, max_length=30)
     gadm_country_iso = models.CharField(max_length=3)
     gadm_country_shape_perimeter = models.FloatField()
     gadm_country_shape_area = models.FloatField()
@@ -102,7 +102,7 @@ class gadm_country_facts_10(models.Model):
 class gadm_country_facts_90(models.Model):
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
-    gadm_country_alias = models.CharField(max_length=30)
+    gadm_country_alias = models.CharField(null=True, max_length=30)
     gadm_country_iso = models.CharField(max_length=3)
     gadm_country_shape_perimeter = models.FloatField()
     gadm_country_shape_area = models.FloatField()
@@ -128,7 +128,7 @@ class gadm_country_facts_90(models.Model):
 class gadm_country_facts_95(models.Model):
     gadm_country_id = models.IntegerField()
     gadm_country_name = models.CharField(max_length=30)
-    gadm_country_alias = models.CharField(max_length=30)
+    gadm_country_alias = models.CharField(null=True, max_length=30)
     gadm_country_iso = models.CharField(max_length=3)
     gadm_country_shape_perimeter = models.FloatField()
     gadm_country_shape_area = models.FloatField()
