@@ -32,7 +32,7 @@ class Migration(SchemaMigration):
             ('populated_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('built_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mapping_schemes', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
+            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')()),
         ))
         db.send_create_signal('ged4gem', ['gadm_country_facts_00'])
 
@@ -61,7 +61,7 @@ class Migration(SchemaMigration):
             ('populated_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('built_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mapping_schemes', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
+            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')()),
         ))
         db.send_create_signal('ged4gem', ['gadm_country_facts_05'])
 
@@ -90,7 +90,7 @@ class Migration(SchemaMigration):
             ('populated_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('built_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mapping_schemes', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
+            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')()),
         ))
         db.send_create_signal('ged4gem', ['gadm_country_facts_10'])
 
@@ -119,7 +119,7 @@ class Migration(SchemaMigration):
             ('populated_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('built_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mapping_schemes', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
+            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')()),
         ))
         db.send_create_signal('ged4gem', ['gadm_country_facts_90'])
 
@@ -148,7 +148,7 @@ class Migration(SchemaMigration):
             ('populated_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('built_ratio', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('mapping_schemes', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
+            ('moresimplegeom', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')()),
         ))
         db.send_create_signal('ged4gem', ['gadm_country_facts_95'])
     
@@ -187,7 +187,7 @@ class Migration(SchemaMigration):
             'gadm_country_shape_perimeter': ('django.db.models.fields.FloatField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mapping_schemes': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'moresimplegeom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
+            'moresimplegeom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {}),
             'num_buildings': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'people_dwelling': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'populated_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -214,7 +214,7 @@ class Migration(SchemaMigration):
             'gadm_country_shape_perimeter': ('django.db.models.fields.FloatField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mapping_schemes': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'moresimplegeom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
+            'moresimplegeom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {}),
             'num_buildings': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'people_dwelling': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'populated_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -241,7 +241,7 @@ class Migration(SchemaMigration):
             'gadm_country_shape_perimeter': ('django.db.models.fields.FloatField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mapping_schemes': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'moresimplegeom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
+            'moresimplegeom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {}),
             'num_buildings': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'people_dwelling': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'populated_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -268,7 +268,7 @@ class Migration(SchemaMigration):
             'gadm_country_shape_perimeter': ('django.db.models.fields.FloatField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mapping_schemes': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'moresimplegeom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
+            'moresimplegeom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {}),
             'num_buildings': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'people_dwelling': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'populated_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -295,7 +295,7 @@ class Migration(SchemaMigration):
             'gadm_country_shape_perimeter': ('django.db.models.fields.FloatField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mapping_schemes': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'moresimplegeom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
+            'moresimplegeom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {}),
             'num_buildings': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'people_dwelling': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'populated_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),

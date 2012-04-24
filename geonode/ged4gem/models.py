@@ -44,7 +44,7 @@ class gadm_country_facts_00(models.Model):
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(max_length=30)
-    moresimplegeom = models.PointField(srid=4326)
+    moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
 class gadm_country_facts_05(models.Model):
@@ -70,7 +70,7 @@ class gadm_country_facts_05(models.Model):
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(max_length=30)
-    moresimplegeom = models.PointField(srid=4326)
+    moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
 class gadm_country_facts_10(models.Model):
@@ -96,7 +96,7 @@ class gadm_country_facts_10(models.Model):
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(max_length=30)
-    moresimplegeom = models.PointField(srid=4326)
+    moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
 class gadm_country_facts_90(models.Model):
@@ -122,7 +122,7 @@ class gadm_country_facts_90(models.Model):
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(max_length=30)
-    moresimplegeom = models.PointField(srid=4326)
+    moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
 class gadm_country_facts_95(models.Model):
@@ -148,4 +148,4 @@ class gadm_country_facts_95(models.Model):
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(max_length=30)
-    moresimplegeom = models.PointField(srid=4326)
+    moresimplegeom = models.MultiPolygonField(srid=4326)
