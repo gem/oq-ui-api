@@ -43,7 +43,7 @@ class gadm_country_facts_00(models.Model):
     population = models.FloatField(null=True, blank=True)
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
-    mapping_schemes = models.CharField(max_length=30)
+    mapping_schemes = models.CharField(null=True, max_length=30)
     moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
@@ -69,7 +69,7 @@ class gadm_country_facts_05(models.Model):
     population = models.FloatField(null=True, blank=True)
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
-    mapping_schemes = models.CharField(max_length=30)
+    mapping_schemes = models.CharField(null=True, max_length=30)
     moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
@@ -95,7 +95,7 @@ class gadm_country_facts_10(models.Model):
     population = models.FloatField(null=True, blank=True)
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
-    mapping_schemes = models.CharField(max_length=30)
+    mapping_schemes = models.CharField(null=True, max_length=30)
     moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
@@ -121,7 +121,7 @@ class gadm_country_facts_90(models.Model):
     population = models.FloatField(null=True, blank=True)
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
-    mapping_schemes = models.CharField(max_length=30)
+    mapping_schemes = models.CharField(null=True, max_length=30)
     moresimplegeom = models.MultiPolygonField(srid=4326)
 
 
@@ -147,5 +147,5 @@ class gadm_country_facts_95(models.Model):
     population = models.FloatField(null=True, blank=True)
     populated_ratio = models.FloatField(null=True, blank=True)
     built_ratio = models.FloatField(null=True, blank=True)
-    mapping_schemes = models.CharField(max_length=30)
+    mapping_schemes = models.CharField(null=True, max_length=30)
     moresimplegeom = models.MultiPolygonField(srid=4326)
