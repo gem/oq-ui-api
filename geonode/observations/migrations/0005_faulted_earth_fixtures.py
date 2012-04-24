@@ -225,8 +225,7 @@ class Migration(DataMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'loc_meth': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
-            'scale': ('django.db.models.fields.BigIntegerField', [], {}),
-            'tid': ('django.db.models.fields.IntegerField', [], {})
+            'scale': ('django.db.models.fields.BigIntegerField', [], {})
         }
     }
 

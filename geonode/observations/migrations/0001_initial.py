@@ -175,7 +175,6 @@ class Migration(SchemaMigration):
         # Adding model 'Trace'
         db.create_table('observations_trace', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('tid', self.gf('django.db.models.fields.IntegerField')()),
             ('loc_meth', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('scale', self.gf('django.db.models.fields.BigIntegerField')()),
             ('accuracy', self.gf('django.db.models.fields.BigIntegerField')()),
@@ -463,8 +462,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'loc_meth': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
-            'scale': ('django.db.models.fields.BigIntegerField', [], {}),
-            'tid': ('django.db.models.fields.IntegerField', [], {})
+            'scale': ('django.db.models.fields.BigIntegerField', [], {})
         }
     }
 
