@@ -21,33 +21,6 @@ from django.contrib.gis.db import models
 #ged4gem schema
 #ged4gem table
 
-class gadm_country_facts(models.Model):
-    gedid = models.IntegerField()
-    gadm_country_id = models.IntegerField()
-    gadm_country_name = models.CharField(max_length=30)
-    gadm_country_alias = models.CharField(max_length=30)
-    gadm_country_iso = models.CharField(max_length=3)
-    gadm_country_shape_perimeter = models.FloatField()
-    gadm_country_shape_area = models.FloatField()
-    gadm_country_date = models.DateField(null=True, blank=True)
-    urban_rural_source = models.CharField(max_length=30)
-    people_dwelling = models.FloatField(null=True, blank=True)
-    dwellings_building = models.FloatField(null=True, blank=True)
-    building_area = models.FloatField(null=True, blank=True)
-    replacement_cost = models.FloatField(null=True, blank=True)
-    num_buildings = models.FloatField(null=True, blank=True)
-    gadm_country_attribute_date = models.DateField(null=True, blank=True)
-    population_src_id = models.IntegerField(null=True, blank=True)
-    population_src_source = models.CharField(max_length=30)
-    population_src_description = models.CharField(max_length=30)
-    population_src_date = models.DateField(null=True, blank=True)
-    population = models.FloatField(null=True, blank=True)
-    populated_ratio = models.FloatField(null=True, blank=True)
-    built_ratio = models.FloatField(null=True, blank=True)
-    mapping_schemes = models.CharField(max_length=30)
-    moresimplegeom = models.PointField(srid=4326)
-
-
 class gadm_country_facts_00(models.Model):
     gedid = models.IntegerField()
     gadm_country_id = models.IntegerField()
