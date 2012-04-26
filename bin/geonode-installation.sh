@@ -104,8 +104,6 @@ geonode_installation () {
         exit 1
     fi
     
-if [ 0 -eq 1 ]; then
-
     ###
     echo "== General requirements ==" 
     apt-get install -y git ant openjdk-6-jdk
@@ -119,8 +117,8 @@ if [ 0 -eq 1 ]; then
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
     apt-get install -y geonode
     
-    read -p "Public site url or public IP address (es. 'http://www.example.com/' or 'http://$GEM_HOSTNAME/'): " SITE_URL
-    sed -i "s@^ *SITEURL *=.*@SITEURL = '$SITE_URL'@g" /etc/geonode/local_settings.py
+    read -p "Public site url or public IP address (es. 'www.example.com' or '$GEM_HOSTNAME'): " SITE_URL
+    sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_URL/'@g" /etc/geonode/local_settings.py
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
     if [ $? -ne 0 ]; then
         sed -i 's@\(^WSGIDaemonProcess.*$\)@\1:/var/lib/geonode/src/GeoNodePy/geonode@g' /etc/apache2/sites-available/geonode
@@ -128,7 +126,7 @@ if [ 0 -eq 1 ]; then
 
     service tomcat6 restart
     service apache2 restart
-    wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "$SITE_URL"
+    wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "http://$SITE_URL/"
 
     head -n 1 "$GEM_TMPDIR/test_geonode.html" > "$GEM_TMPDIR/test_geonode.http"
     grep -q 200 "$GEM_TMPDIR/test_geonode.http"
@@ -150,10 +148,10 @@ if [ 0 -eq 1 ]; then
     ln -s "$GEM_BASEDIR"/django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
     apt-get install -y python-django-south
 
-fi    
-
     ##
     #  Django-South configuration
+
+    #    /var/lib/geonode/src/GeoNodePy/geonode/settings.py
     midd_class="$(sed -n '/^MIDDLEWARE_CLASSES[ 	]*=[ 	]*/,/)/p' /var/lib/geonode/src/GeoNodePy/geonode/settings.py)"
 
     echo "$midd_class=" | grep -q "'django_schemata\.middleware\.SchemataMiddleware'" 
@@ -169,6 +167,43 @@ fi
     echo "$inst_apps" | grep -q "'django_schemata'"
     if [ $? -ne 0 ]; then
         sed -i "s/^\(INSTALLED_APPS[ 	]*=[ 	]*.*\)/\1\n    'django_schemata',/g"   /var/lib/geonode/src/GeoNodePy/geonode/settings.py
+    fi
+
+    # /etc/geonode/local_settings.py
+    
+    grep -q "^[ 	]*'ENGINE':.*" /etc/geonode/local_settings.py
+    if [ $? -ne 0 ]; then
+        echo "Required 'ENGINE' entry into /etc/geonode/local_settings.py not found"
+        exit 3
+    fi
+    sed -i "s/^\([ 	]*'ENGINE':\)\(.*\)/# \1\2\n\1 'django_schemata.postgresql_backend',/g" /etc/geonode/local_settings.py
+
+    grep -u 'SCHEMA_DOMAINS[ 	]*=[ 	]*' /etc/geonode/local_settings.py
+    if [ $? -ne 0 ]; then
+        echo "\
+SCHEMATA_DOMAINS = { 
+  '$SITE_URL': {
+    'schema_name': 'public',
+    }
+  }" >> /etc/geonode/local_settings.py
+    else
+        sche_dom="$(sed -n '/^SCHEMATA_DOMAINS *=/,/^}$/p'  /etc/geonode/local_settings.py | tail -n +2 | tr -d '\n' | sed 's/},/},\n/g')"
+        echo "$sche_dom" | grep -q "^[ 	]*'$SITE_URL':[ 	]*{[ 	]*'schema_name':[ 	]*'public',[ 	]*}"
+        if [ $? -ne 0 ]; then
+            sed -i "s/^\(SCHEMATA_DOMAINS *= *.*\)/\1\n  '$SITE_URL': {\n    'schema_name': 'public',\n    },\n/g"   /etc/geonode/local_settings.py
+        else
+            echo "WARNING: $SITE_URL just exists into SCHEMATA_DOMAINS entry of /etc/geonode/local_settings.py"
+            echo "$sche_dom"
+            read -p "If it isn't correct, edit it and continue" a            
+        fi
+    fi
+
+    grep -u '^SOUTH_DATABASE_ADAPTERS[ 	]*=[ 	]*' /etc/geonode/local_settings.py
+    if [ $? -ne 0 ]; then
+        echo "\
+SOUTH_DATABASE_ADAPTERS = { 
+    'default': 'south.db.postgresql_psycopg2',
+}" >> /etc/geonode/local_settings.py
     fi
 
     ###
@@ -190,12 +225,25 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
     service apache2 start
     service tomcat6 start
 
+    grep -u '^POSTGIS_VERSION[ 	]*=[ 	]*' /etc/geonode/local_settings.py
+    if [ $? -ne 0 ]; then
+        echo "POSTGIS_VERSION = '1.5.3'" >> /etc/geonode/local_settings.py
+    fi
+    grep -u '^ORIGINAL_BACKEND[ 	]*=[ 	]*' /etc/geonode/local_settings.py
+    if [ $? -ne 0 ]; then
+        echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> /etc/geonode/local_settings.py
+    fi
+
+## #
+## ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'
+
+
 
 #
 #  THE END
 #
 
-    echo "From root we have: $norm_user from $norm_dir dir SITE_URL $SITE_URL"
+    echo "From root we have: norm_user: $norm_user  norm_dir: $norm_dir SITE_URL: $SITE_URL"
     
 }
 
