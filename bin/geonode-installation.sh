@@ -4,10 +4,10 @@ set -x
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
-export GEM_DJANGO_SCHEMATA_VERS=8f9487b70c9b1508ae70b502b950066147956993
-export       GEM_OQ_UI_API_VERS=fc689867330f78c883d1283a2542bdba12835083
-export    GEM_OQ_UI_CLIENT_VERS=2224d2eff6ca5ec8de33372a40a1c7fccaa0469f
-export GEM_OQ_UI_GEOSERVER_VERS=fbe1f48f1e40dd91e1e2dfcad5bebaf20a208b1e
+export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
+export       GEM_OQ_UI_API_GIT_VERS=fc689867330f78c883d1283a2542bdba12835083
+export    GEM_OQ_UI_CLIENT_GIT_VERS=2224d2eff6ca5ec8de33372a40a1c7fccaa0469f
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=fbe1f48f1e40dd91e1e2dfcad5bebaf20a208b1e
 export GEM_DB_NAME="geonode_dev"
 
 #
@@ -15,6 +15,8 @@ export GEM_DB_NAME="geonode_dev"
 export GEM_DB_USER="geonode"
 export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
+export GEM_TMPDIR="gem_tmp"
+export GEM_BASEDIR="/var/lib/openquake"
 export NL='
 '
 
@@ -30,6 +32,28 @@ usage () {
     echo 
     echo "  Run the command from your normal user account"
     exit $err
+}
+
+# this function create a required directory. if fails the script exits with error level 2
+# with '-d' flag try to remove the dir before creation
+mkreqdir () {
+    local d
+
+    if [ $# -gt 1 -a "$1" = "-d" ]; then
+        rm -rf "$2"
+        shift
+    fi
+    d="$1"
+
+    if [ ! -d "$d" ]; then
+        mkdir -p "$d"
+    fi
+
+    if [ ! -d "$d" ]; then
+        echo "ERROR: '$d' dir creation failed" 
+        exit 2
+    fi
+    return 0
 }
 
 check_distro () {
@@ -61,21 +85,15 @@ geonode_installation () {
     norm_user="$1"
     norm_dir="$2"
 
-    #
+    ###
     # Verify if the distribution is compliant with the script.
     check_distro
     ret=$?
 
-    if [ ! -d gem_tmp ]; then
-        mkdir gem_tmp
-    fi
+    mkreqdir "$GEM_TMPDIR"
+    rm -rf "$GEM_TMPDIR"/*
 
-    if [ ! -d gem_tmp ]; then
-        echo "ERROR: gem_tmp dir creation failed" 
-        exit 1
-    else
-        rm -rf gem_tmp/*
-    fi  
+    mkreqdir "$GEM_BASEDIR"
 
     distdesc=" $(lsb_release  -d | sed 's/Description:[ 	]*//g')" 
     if [ $ret -eq 1 ]; then
@@ -87,11 +105,12 @@ geonode_installation () {
     fi
     
 if [ 0 -eq 1 ]; then
-    # 
+
+    ###
     echo "== General requirements ==" 
     apt-get install -y git ant openjdk-6-jdk
 
-    #
+    ###
     echo "== Geonode installation==" 
     apt-get install -y python-software-properties
     add-apt-repository ppa:geonode/release
@@ -99,7 +118,6 @@ if [ 0 -eq 1 ]; then
     export PATH=/usr/lib/python-django/bin:$PATH
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
     apt-get install -y geonode
-fi    
     
     read -p "Public site url or public IP address (es. 'http://www.example.com/' or 'http://$GEM_HOSTNAME/'): " SITE_URL
     sed -i "s@^ *SITEURL *=.*@SITEURL = '$SITE_URL'@g" /etc/geonode/local_settings.py
@@ -110,10 +128,10 @@ fi
 
     service tomcat6 restart
     service apache2 restart
-    wget --save-headers -O gem_tmp/test_geonode.html "$SITE_URL"
+    wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "$SITE_URL"
 
-    head -n 1 gem_tmp/test_geonode.html > gem_tmp/test_geonode.http 
-    grep -q 200 gem_tmp/test_geonode.http 
+    head -n 1 "$GEM_TMPDIR/test_geonode.html" > "$GEM_TMPDIR/test_geonode.http"
+    grep -q 200 "$GEM_TMPDIR/test_geonode.http"
     if [ $? -ne 0 ]; then
         echo 
         echo "WARNING: GEONODE WEB TEST FAILED!"
@@ -122,7 +140,38 @@ fi
         read -p "press ENTER to continue or CTRL+C to abort:" a
     fi
 
-    # 
+    ###
+    echo "== Django-South and Django-Schemata installation =="
+        
+    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/tuttle/django-schemata.git"
+    mkreqdir -d "$GEM_BASEDIR"/django-schemata
+    cd django-schemata
+    git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"/django-schemata
+    ln -s "$GEM_BASEDIR"/django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
+    apt-get install -y python-django-south
+
+fi    
+
+    ##
+    #  Django-South configuration
+    midd_class="$(sed -n '/^MIDDLEWARE_CLASSES[ 	]*=[ 	]*/,/)/p' /var/lib/geonode/src/GeoNodePy/geonode/settings.py)"
+
+    echo "$midd_class=" | grep -q "'django_schemata\.middleware\.SchemataMiddleware'" 
+    if [ $? -ne 0 ]; then
+        sed -i "s/^\(MIDDLEWARE_CLASSES *= *.*\)/\1\n    'django_schemata.middleware.SchemataMiddleware',/g"   /var/lib/geonode/src/GeoNodePy/geonode/settings.py
+    fi
+
+    inst_apps="$(sed -n '/^INSTALLED_APPS[ 	]*=[ 	]*/,/)/p' /var/lib/geonode/src/GeoNodePy/geonode/settings.py)"
+    echo "$inst_apps" | grep -q "'south'"
+    if [ $? -ne 0 ]; then
+        sed -i "s/^\(INSTALLED_APPS[ 	]*=[ 	]*.*\)/\1\n    'south',/g"   /var/lib/geonode/src/GeoNodePy/geonode/settings.py
+    fi
+    echo "$inst_apps" | grep -q "'django_schemata'"
+    if [ $? -ne 0 ]; then
+        sed -i "s/^\(INSTALLED_APPS[ 	]*=[ 	]*.*\)/\1\n    'django_schemata',/g"   /var/lib/geonode/src/GeoNodePy/geonode/settings.py
+    fi
+
+    ###
     echo "== Database recreation ==" 
     
     service apache2 stop 
@@ -140,6 +189,11 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
     
     service apache2 start
     service tomcat6 start
+
+
+#
+#  THE END
+#
 
     echo "From root we have: $norm_user from $norm_dir dir SITE_URL $SITE_URL"
     
