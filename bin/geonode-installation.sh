@@ -1,6 +1,11 @@
 #!/bin/bash
 set -x
 
+# Guidelines
+#
+#    Configuration file manglings are done only if they not appear already made.
+#
+
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
@@ -17,6 +22,8 @@ export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
 export GEM_TMPDIR="gem_tmp"
 export GEM_BASEDIR="/var/lib/openquake"
+export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
+export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export NL='
 '
 
@@ -56,6 +63,36 @@ mkreqdir () {
     return 0
 }
 
+schemata_config_add() {
+    local sche_dom sche_domn sche_name
+
+    sche_domn="$1"
+    sche_name="$2"
+
+    sche_dom="$(sed -n '/^SCHEMATA_DOMAINS *=/,/^}$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' | sed 's/},/},\n/g')"
+    echo "$sche_dom" | grep -q "^[ 	]*'$sche_domn':[ 	]*{[ 	]*'schema_name':[ 	]*'$sche_name',[ 	]*}"
+    if [ $? -ne 0 ]; then
+        sed -i "s/^\(SCHEMATA_DOMAINS *= *.*\)/\1\n  '$sche_domn': {\n    'schema_name': '$sche_name',\n    },\n/g" "$GEM_GN_LOCSET"
+    else
+        echo "WARNING: $sche_domn just exists into SCHEMATA_DOMAINS entry of $GEM_GN_LOCSET"
+        echo "$sche_dom"
+        read -p "If it isn't correct, edit it and continue" a            
+    fi
+}
+
+installed_apps_add() {
+    local new_app inst_apps
+
+    new_app="$1"
+
+    inst_apps="$(sed -n '/^INSTALLED_APPS[ 	]*=[ 	]*/,/)/p' "$GEM_GN_SETTINGS")"
+    echo "$inst_apps" | grep -q "'$new_app'"
+    if [ $? -ne 0 ]; then
+        sed -i "s/^\(INSTALLED_APPS[ 	]*=[ 	]*.*\)/\1\n    '$new_app',/g"   "$GEM_GN_SETTINGS"
+    fi
+}
+##
+# verify host distro compatibility
 check_distro () {
     local distro rel
     dpkg -l lsb-release | grep -q 'ii[ 	]*lsb-release[ 	]*' >/dev/null 2>&1
@@ -118,7 +155,7 @@ geonode_installation () {
     apt-get install -y geonode
     
     read -p "Public site url or public IP address (es. 'www.example.com' or '$GEM_HOSTNAME'): " SITE_URL
-    sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_URL/'@g" /etc/geonode/local_settings.py
+    sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_URL/'@g" "$GEM_GN_LOCSET"
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
     if [ $? -ne 0 ]; then
         sed -i 's@\(^WSGIDaemonProcess.*$\)@\1:/var/lib/geonode/src/GeoNodePy/geonode@g' /etc/apache2/sites-available/geonode
@@ -146,64 +183,51 @@ geonode_installation () {
     cd django-schemata
     git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"/django-schemata
     ln -s "$GEM_BASEDIR"/django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
+    cd -
     apt-get install -y python-django-south
 
-    ##
+    ###
     #  Django-South configuration
 
+    ##
     #    /var/lib/geonode/src/GeoNodePy/geonode/settings.py
-    midd_class="$(sed -n '/^MIDDLEWARE_CLASSES[ 	]*=[ 	]*/,/)/p' /var/lib/geonode/src/GeoNodePy/geonode/settings.py)"
+    midd_class="$(sed -n '/^MIDDLEWARE_CLASSES[ 	]*=[ 	]*/,/)/p' "$GEM_GN_SETTINGS")"
 
     echo "$midd_class=" | grep -q "'django_schemata\.middleware\.SchemataMiddleware'" 
     if [ $? -ne 0 ]; then
-        sed -i "s/^\(MIDDLEWARE_CLASSES *= *.*\)/\1\n    'django_schemata.middleware.SchemataMiddleware',/g"   /var/lib/geonode/src/GeoNodePy/geonode/settings.py
+        sed -i "s/^\(MIDDLEWARE_CLASSES *= *.*\)/\1\n    'django_schemata.middleware.SchemataMiddleware',/g" "$GEM_GN_SETTINGS"
     fi
 
-    inst_apps="$(sed -n '/^INSTALLED_APPS[ 	]*=[ 	]*/,/)/p' /var/lib/geonode/src/GeoNodePy/geonode/settings.py)"
-    echo "$inst_apps" | grep -q "'south'"
-    if [ $? -ne 0 ]; then
-        sed -i "s/^\(INSTALLED_APPS[ 	]*=[ 	]*.*\)/\1\n    'south',/g"   /var/lib/geonode/src/GeoNodePy/geonode/settings.py
-    fi
-    echo "$inst_apps" | grep -q "'django_schemata'"
-    if [ $? -ne 0 ]; then
-        sed -i "s/^\(INSTALLED_APPS[ 	]*=[ 	]*.*\)/\1\n    'django_schemata',/g"   /var/lib/geonode/src/GeoNodePy/geonode/settings.py
-    fi
+    installed_apps_add 'south'
+    installed_apps_add 'django_schemata'
 
+    ##
     # /etc/geonode/local_settings.py
-    
-    grep -q "^[ 	]*'ENGINE':.*" /etc/geonode/local_settings.py
+    grep -q "^[ 	]*'ENGINE':.*" "$GEM_GN_LOCSET"
     if [ $? -ne 0 ]; then
-        echo "Required 'ENGINE' entry into /etc/geonode/local_settings.py not found"
+        echo "Required 'ENGINE' entry into $GEM_GN_LOCSET not found"
         exit 3
     fi
-    sed -i "s/^\([ 	]*'ENGINE':\)\(.*\)/# \1\2\n\1 'django_schemata.postgresql_backend',/g" /etc/geonode/local_settings.py
+    sed -i "s/^\([ 	]*'ENGINE':\)\(.*\)/# \1\2\n\1 'django_schemata.postgresql_backend',/g" "$GEM_GN_LOCSET"
 
-    grep -u 'SCHEMA_DOMAINS[ 	]*=[ 	]*' /etc/geonode/local_settings.py
+    grep -q 'SCHEMATA_DOMAINS[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
     if [ $? -ne 0 ]; then
         echo "\
 SCHEMATA_DOMAINS = { 
   '$SITE_URL': {
     'schema_name': 'public',
     }
-  }" >> /etc/geonode/local_settings.py
+  }" >> "$GEM_GN_LOCSET"
     else
-        sche_dom="$(sed -n '/^SCHEMATA_DOMAINS *=/,/^}$/p'  /etc/geonode/local_settings.py | tail -n +2 | tr -d '\n' | sed 's/},/},\n/g')"
-        echo "$sche_dom" | grep -q "^[ 	]*'$SITE_URL':[ 	]*{[ 	]*'schema_name':[ 	]*'public',[ 	]*}"
-        if [ $? -ne 0 ]; then
-            sed -i "s/^\(SCHEMATA_DOMAINS *= *.*\)/\1\n  '$SITE_URL': {\n    'schema_name': 'public',\n    },\n/g"   /etc/geonode/local_settings.py
-        else
-            echo "WARNING: $SITE_URL just exists into SCHEMATA_DOMAINS entry of /etc/geonode/local_settings.py"
-            echo "$sche_dom"
-            read -p "If it isn't correct, edit it and continue" a            
-        fi
+        schemata_config_add "$SITE_URL" "public"
     fi
 
-    grep -u '^SOUTH_DATABASE_ADAPTERS[ 	]*=[ 	]*' /etc/geonode/local_settings.py
+    grep -q '^SOUTH_DATABASE_ADAPTERS[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
     if [ $? -ne 0 ]; then
         echo "\
 SOUTH_DATABASE_ADAPTERS = { 
     'default': 'south.db.postgresql_psycopg2',
-}" >> /etc/geonode/local_settings.py
+}" >> "$GEM_GN_LOCSET"
     fi
 
     ###
@@ -220,24 +244,100 @@ psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME ; \
 psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
 "
     
-    sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" /etc/geonode/local_settings.py
+    sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
     
     service apache2 start
     service tomcat6 start
 
-    grep -u '^POSTGIS_VERSION[ 	]*=[ 	]*' /etc/geonode/local_settings.py
+    postgis_vers="$(dpkg-query --show -f '${Version}' postgis 2>/dev/null)"
     if [ $? -ne 0 ]; then
-        echo "POSTGIS_VERSION = '1.5.3'" >> /etc/geonode/local_settings.py
+        echo "Postgis not found, verify your system."
+        exit 3
     fi
-    grep -u '^ORIGINAL_BACKEND[ 	]*=[ 	]*' /etc/geonode/local_settings.py
-    if [ $? -ne 0 ]; then
-        echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> /etc/geonode/local_settings.py
+    postgis_vers="$(echo "$postgis_vers" | sed 's/-.*//g')"
+
+    grep -q '^POSTGIS_VERSION[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
+    if [ $? -eq 0 ]; then
+        sed -i "s/^\(POSTGIS_VERSION[ 	]*=[ 	]*['\"]\)[0-9\.]\+\(.*\)/\1$postgis_vers\2/g" "$GEM_GN_LOCSET"
+    else
+        echo "POSTGIS_VERSION = '$postgis_vers'" >> "$GEM_GN_LOCSET"
     fi
 
-## #
-## ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'
+    grep -q '^ORIGINAL_BACKEND[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
+    if [ $? -eq 0 ]; then
+        sed -i "s/^\(ORIGINAL_BACKEND[ 	]*=[ 	]*['\"]\)[0-9\.]\+\(.*\)/\1django.contrib.gis.db.backends.postgis\2/g" "$GEM_GN_LOCSET"
+    else
+        echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> "$GEM_GN_LOCSET"
+    fi
 
+    ###
+    echo "== Add 'geodetic' and 'observations' Django applications =="
 
+    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/gem/oq-ui-api.git"
+    mkreqdir -d "$GEM_BASEDIR"/oq-ui-api
+    cd oq-ui-api
+    git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-api
+    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/geodetic     /var/lib/geonode/src/GeoNodePy/geonode/geodetic
+    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
+     
+    ##
+    # /etc/geonode/local_settings.py    
+    schemata_config_add 'geodetic' 'geodetic'
+    schemata_config_add 'observations' 'gem'
+
+    ##
+    # /var/lib/geonode/src/GeoNodePy/geonode/settings.py    
+    installed_apps_add 'geonode.observations'
+    installed_apps_add 'geonode.geodetic'
+
+    ##
+    # deploy database
+    cd /var/lib/geonode/
+    source bin/activate
+    cd src/GeoNodePy/geonode/
+    python ./manage.py manage_schemata
+    export DJANGO_SCHEMATA_DOMAIN="$SITE_URL"
+    python ./manage.py syncdb
+    export DJANGO_SCHEMATA_DOMAIN=geodetic
+    python ./manage.py migrate geodetic
+    export DJANGO_SCHEMATA_DOMAIN=observations
+    python ./manage.py migrate observations
+    deactivate
+    
+    cd $norm_dir
+
+    ##
+    echo "Add 'FaultedEarth' and 'geodetic'' client applications"
+
+    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/gem/oq-ui-client.git"
+    sudo su - nastasi -c "
+cd \"$norm_dir\"
+git clone git://github.com/gem/oq-ui-client.git
+cd oq-ui-client
+git checkout $GEM_OQ_UI_CLIENT_GIT_VERS
+git submodule init
+git submodule update
+ant init
+ant debug -Dapp.port=8081 &
+debug_pid=\$!
+sleep 5
+kill -0 \$debug_pid
+if [ \$? -ne 0 ]; then
+    echo \"oq-ui-client checkpoint\"
+    echo \"ERROR: 'ant debug' failed\"
+    exit 4
+fi
+kill -INT \$debug_pid
+exit 0
+"
+    ret=$?
+    if [ $ret -ne 0 ]; then
+        exit $ret
+    fi
+    
+    
+
+    
 
 #
 #  THE END
@@ -270,6 +370,7 @@ elif [ $# -eq 0 ]; then
     read -p "press ENTER to continue or CTRL+C to abort:" a
     echo 
     sudo -p "To install geonode root permissions are needed.${NL}Please type password for $wai: " $0 "$wai" "$PWD"
+    exit $?
 else
     usage "$0" 1
 fi
