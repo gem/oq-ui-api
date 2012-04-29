@@ -113,6 +113,17 @@ check_distro () {
     return 0
 }
 
+    
+apache_append_proxy () {
+    local pa
+
+    pa="$1"
+    grep -q "$pa" /etc/apache2/sites-available/geonode
+    if [ $? -ne 0 ]; then
+        sed -i "s@\(</VirtualHost>.*\)@$pa\n\1@g" /etc/apache2/sites-available/geonode
+    fi
+}
+
 geonode_installation () { 
     local norm_user norm_dir ret a distdesc
     local cur_step
@@ -147,6 +158,12 @@ geonode_installation () {
 
     ###
     echo "== Geonode installation==" 
+    defa="$GEM_HOSTNAME"
+    read -p "Public site url or public IP address [$defa]: " SITE_URL
+    if [ "$SITE_URL" = "" ]; then
+        SITE_URL="$defa"
+    fi
+    export SITE_URL
     apt-get install -y python-software-properties
     add-apt-repository ppa:geonode/release
     apt-get update
@@ -154,7 +171,6 @@ geonode_installation () {
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
     apt-get install -y geonode
     
-    read -p "Public site url or public IP address (es. 'www.example.com' or '$GEM_HOSTNAME'): " SITE_URL
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_URL/'@g" "$GEM_GN_LOCSET"
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
     if [ $? -ne 0 ]; then
@@ -309,7 +325,6 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
     ##
     echo "Add 'FaultedEarth' and 'geodetic'' client applications"
 
-    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/gem/oq-ui-client.git"
     sudo su - nastasi -c "
 cd \"$norm_dir\"
 git clone git://github.com/gem/oq-ui-client.git
@@ -320,14 +335,14 @@ git submodule update
 ant init
 ant debug -Dapp.port=8081 &
 debug_pid=\$!
-sleep 5
+sleep 10
 kill -0 \$debug_pid
 if [ \$? -ne 0 ]; then
     echo \"oq-ui-client checkpoint\"
     echo \"ERROR: 'ant debug' failed\"
     exit 4
 fi
-kill -INT \$debug_pid
+kill -TERM \$debug_pid
 exit 0
 "
     ret=$?
@@ -335,9 +350,63 @@ exit 0
         exit $ret
     fi
     
-    
+    ## 
+    # FaultedEarth 
+    sudo su - nastasi -c "
+cd \"$norm_dir\"
+cd oq-ui-client
+sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1FaultedEarth\2@g;s/^\( *\).*\(Build File.*\)$/\1FaultedEarth \2/g' build.xml
+cp app/static/index_FE_fault.html app/static/index.html 
+ant static-war
+"
+    cp oq-ui-client/build/FaultedEarth.war /var/lib/tomcat6/webapps/
 
+    ##
+    # geodetic
+    sudo su - nastasi -c "
+cd \"$norm_dir\"
+cd oq-ui-client
+sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1geodetic\2@g;s/^\( *\).*\(Build File.*\)$/\1geodetic \2/g' build.xml
+cp app/static/index_geodetic.html app/static/index.html 
+ant static-war
+"
+    cp oq-ui-client/build/geodetic.war /var/lib/tomcat6/webapps/
+ 
+    ##
+    # configuration
+    apache_append_proxy 'ProxyPass /FaultedEarth http://localhost:8080/FaultedEarth'
+    apache_append_proxy 'ProxyPassReverse /FaultedEarth http://localhost:8080/FaultedEarth'
+    apache_append_proxy 'ProxyPass /geodetic http://localhost:8080/geodetic'
+    apache_append_proxy 'ProxyPassReverse /geodetic http://localhost:8080/geodetic'
+
+    service tomcat6 restart
+    service apache2 restart
+
+    ###
+    # custom geoserver installation
+
+    service tomcat6 stop
     
+    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/gem/oq-ui-geoserver.git"
+    mkreqdir -d "$GEM_BASEDIR"/oq-ui-geoserver
+    cd oq-ui-geoserver
+    git archive $GEM_OQ_UI_GEOSERVER_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-geoserver
+    chown -R tomcat6.tomcat6 "$GEM_BASEDIR"/oq-ui-geoserver
+    if [ -d /var/lib/tomcat6/webapps/geoserver -a ! -L /var/lib/tomcat6/webapps/geoserver ]; then
+        mv /var/lib/tomcat6/webapps/geoserver "$GEM_BASEDIR"/geoserver.orig
+    fi
+
+    ln -s "$GEM_BASEDIR"/oq-ui-geoserver/geoserver /var/lib/tomcat6/webapps/geoserver
+    cd -
+
+    ##
+    # configuration
+    cat /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml | \
+        sed -n '/^.*<param-name>GEONODE_BASE_URL<\/param-name>/{p;n;x;d};p'   | sed "s@^\( *\)\(<param-name>GEONODE_BASE_URL</param-name>.*\)@\1\2\n\1<param-value>http://$SITE_URL/</param-value>@g" | \
+        sed -n '/^.*<param-name>GEOSERVER_DATA_DIR<\/param-name>/{p;n;x;d};p' | sed "s@^\( *\)\(<param-name>GEOSERVER_DATA_DIR</param-name>.*\)@\1\2\n\1<param-value>/var/lib/tomcat6/webapps/geoserver/data/</param-value>@g" > $GEM_TMPDIR/web.xml.new
+    cp $GEM_TMPDIR/web.xml.new /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml
+
+    service tomcat6 start
 
 #
 #  THE END
