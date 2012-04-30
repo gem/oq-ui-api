@@ -25,7 +25,7 @@ from django.contrib.gis.db import models
 class Geodetic(models.Model):
     gid = models.IntegerField()
     lat = models.FloatField(null=True, blank=True)
-    longi = models.FloatField(null=True, blank=True)
+    lon = models.FloatField(null=True, blank=True)
     exx = models.FloatField(null=True, blank=True)
     eyy = models.FloatField(null=True, blank=True)
     exy = models.FloatField(null=True, blank=True)
