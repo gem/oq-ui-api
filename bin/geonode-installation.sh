@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: 0.1.0
+# Version: 0.1.1
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -10,9 +10,16 @@
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
+export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
+
+export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
 export       GEM_OQ_UI_API_GIT_VERS=fc689867330f78c883d1283a2542bdba12835083
+
+export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=2224d2eff6ca5ec8de33372a40a1c7fccaa0469f
+
+export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
 export GEM_OQ_UI_GEOSERVER_GIT_VERS=fbe1f48f1e40dd91e1e2dfcad5bebaf20a208b1e
 export GEM_DB_NAME="geonode_dev"
 
@@ -203,7 +210,7 @@ geonode_installation () {
     ###
     echo "== Django-South and Django-Schemata installation =="
         
-    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/tuttle/django-schemata.git"
+    sudo -u $norm_user -i "cd $norm_dir ; git clone $GEM_DJANGO_SCHEMATA_GIT_REPO"
     mkreqdir -d "$GEM_BASEDIR"/django-schemata
     cd django-schemata
     git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"/django-schemata
@@ -298,7 +305,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
     ###
     echo "== Add 'geodetic' and 'observations' Django applications =="
 
-    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/gem/oq-ui-api.git"
+    sudo -u $norm_user -i "cd $norm_dir ; test ! -d oq-ui-api || rm -ir oq-ui-api ; git clone $GEM_OQ_UI_API_GIT_REPO"
     mkreqdir -d "$GEM_BASEDIR"/oq-ui-api
     cd oq-ui-api
     git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-api
@@ -336,7 +343,8 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
 
     sudo su - nastasi -c "
 cd \"$norm_dir\"
-git clone git://github.com/gem/oq-ui-client.git
+test ! -d oq-ui-client || rm -ir oq-ui-client
+git clone $GEM_OQ_UI_CLIENT_GIT_REPO
 cd oq-ui-client
 git checkout $GEM_OQ_UI_CLIENT_GIT_VERS
 git submodule init
@@ -396,7 +404,7 @@ ant static-war
 
     service tomcat6 stop
     
-    sudo -u $norm_user -i "cd $norm_dir ; git clone git://github.com/gem/oq-ui-geoserver.git"
+    sudo -u $norm_user -i "cd $norm_dir ; test ! -d oq-ui-geoserver || rm -ir oq-ui-geoserver ; git clone $GEM_OQ_UI_GEOSERVER_GIT_REPO"
     mkreqdir -d "$GEM_BASEDIR"/oq-ui-geoserver
     cd oq-ui-geoserver
     git archive $GEM_OQ_UI_GEOSERVER_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-geoserver
