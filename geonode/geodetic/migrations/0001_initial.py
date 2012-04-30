@@ -54,7 +54,7 @@ class Migration(SchemaMigration):
             'cc_xx_yy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'cc_xx_xy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'cc_yy_xy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'x_azimuth': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}
+            'x_azimuth': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'exx_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'eyy_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'the_geom': ('django.contrib.gis.db.models.fields.PointField', [], {'dim': '2'})
