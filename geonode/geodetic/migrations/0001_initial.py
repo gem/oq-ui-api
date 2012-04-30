@@ -22,6 +22,7 @@ class Migration(SchemaMigration):
             ('var_eyy', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('cc_xx_yy', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('cc_xx_xy', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('cc_yy_xy', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('x_azimuth', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('exx_psr', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('eyy_psr', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
