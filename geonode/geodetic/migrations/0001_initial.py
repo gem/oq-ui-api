@@ -27,8 +27,8 @@ class Migration(SchemaMigration):
             ('x_azimuth', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('exx_psr', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('eyy_psr', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-            ('the_geom', self.gf('django.contrib.gis.db.models.fields.PointField')(dim=2))
-            )
+            ('the_geom', self.gf('django.contrib.gis.db.models.fields.PointField')(dim=2)),
+            ))
         db.send_create_signal('geodetic', ['Geodetic'])
     
     
@@ -58,7 +58,6 @@ class Migration(SchemaMigration):
             'exx_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'eyy_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'the_geom': ('django.contrib.gis.db.models.fields.PointField', [], {'dim': '2'})
-            )
         }
     }
     
