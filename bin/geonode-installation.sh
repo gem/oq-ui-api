@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 
 # Guidelines
 #
@@ -166,6 +166,14 @@ geonode_installation () {
     export SITE_URL
     apt-get install -y python-software-properties
     add-apt-repository ppa:geonode/release
+    if [ -f /etc/apt/sources.list.d/geonode-release-maverick.list ]; then
+        mv /etc/apt/sources.list.d/geonode-release-maverick.list /etc/apt/sources.list.d/geonode-release-natty.list
+        sed -i 's/maverick/natty/g' /etc/apt/sources.list.d/geonode-release-natty.list
+    else
+        echo "add-apt-repository ppa:geonode/release command failed"
+        echo "installation ABORTED"
+        exit 1
+    fi  
     apt-get update
     export PATH=/usr/lib/python-django/bin:$PATH
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
@@ -412,8 +420,8 @@ ant static-war
 #  THE END
 #
 
-    echo "From root we have: norm_user: $norm_user  norm_dir: $norm_dir SITE_URL: $SITE_URL"
-    
+    # echo "From root we have: norm_user: $norm_user  norm_dir: $norm_dir SITE_URL: $SITE_URL"
+    return 0    
 }
 
 #
@@ -427,6 +435,7 @@ if [ "$wai" = "root" ]; then
         norm_dir="$2"
         
         geonode_installation "$norm_user" "$norm_dir"
+        exit $?
     else
         usage "$0" 1
     fi
@@ -443,9 +452,4 @@ elif [ $# -eq 0 ]; then
 else
     usage "$0" 1
 fi
-
-echo "The end $(whoami)" 
-exit 123
-
-# check for the SO version
 
