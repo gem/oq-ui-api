@@ -174,17 +174,18 @@ geonode_installation () {
     export SITE_URL
     apt-get install -y python-software-properties
     add-apt-repository ppa:geonode/release
-    if [ -f /etc/apt/sources.list.d/geonode-release-maverick.list ]; then
-        mv /etc/apt/sources.list.d/geonode-release-maverick.list /etc/apt/sources.list.d/geonode-release-natty.list
-        sed -i 's/maverick/natty/g' /etc/apt/sources.list.d/geonode-release-natty.list
-    else
-        echo "add-apt-repository ppa:geonode/release command failed"
-        echo "installation ABORTED"
-        exit 1
-    fi  
+#    if [ -f /etc/apt/sources.list.d/geonode-release-maverick.list ]; then
+#        mv /etc/apt/sources.list.d/geonode-release-maverick.list /etc/apt/sources.list.d/geonode-release-natty.list
+#        sed -i 's/maverick/natty/g' /etc/apt/sources.list.d/geonode-release-natty.list
+#    else
+#        echo "add-apt-repository ppa:geonode/release command failed"
+#        echo "installation ABORTED"
+#        exit 1
+#    fi  
     apt-get update
     export PATH=/usr/lib/python-django/bin:$PATH
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
+# if [ 0 -eq 1 ]; then
     apt-get install -y geonode
     
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_URL/'@g" "$GEM_GN_LOCSET"
@@ -207,10 +208,14 @@ geonode_installation () {
         read -p "press ENTER to continue or CTRL+C to abort:" a
     fi
 
+# fi
     ###
     echo "== Django-South and Django-Schemata installation =="
         
-    sudo -u $norm_user -i "cd $norm_dir ; git clone $GEM_DJANGO_SCHEMATA_GIT_REPO"
+    sudo su - $norm_user -c "
+cd $norm_dir
+git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
+"
     mkreqdir -d "$GEM_BASEDIR"/django-schemata
     cd django-schemata
     git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"/django-schemata
@@ -268,12 +273,12 @@ SOUTH_DATABASE_ADAPTERS = {
     service apache2 stop 
     service tomcat6 stop
 
-    sudo -u postgres -i "\
-dropdb $GEM_DB_NAME || true ; \
-createdb -O $GEM_DB_USER $GEM_DB_NAME ; \
-createlang plpgsql $GEM_DB_NAME ; \
-psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME ; \
-psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
+    sudo su - postgres -c "
+dropdb $GEM_DB_NAME || true
+createdb -O $GEM_DB_USER $GEM_DB_NAME 
+createlang plpgsql $GEM_DB_NAME 
+psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME 
+psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME 
 "
     
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
@@ -301,11 +306,13 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
     else
         echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> "$GEM_GN_LOCSET"
     fi
-
     ###
     echo "== Add 'geodetic' and 'observations' Django applications =="
 
-    sudo -u $norm_user -i "cd $norm_dir ; test ! -d oq-ui-api || rm -ir oq-ui-api ; git clone $GEM_OQ_UI_API_GIT_REPO"
+    sudo su - $norm_user -c "
+cd $norm_dir 
+test ! -d oq-ui-api || rm -ir oq-ui-api 
+git clone $GEM_OQ_UI_API_GIT_REPO"
     mkreqdir -d "$GEM_BASEDIR"/oq-ui-api
     cd oq-ui-api
     git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-api
@@ -341,7 +348,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME ; \
     ##
     echo "Add 'FaultedEarth' and 'geodetic'' client applications"
 
-    sudo su - nastasi -c "
+    sudo su - $norm_user -c "
 cd \"$norm_dir\"
 test ! -d oq-ui-client || rm -ir oq-ui-client
 git clone $GEM_OQ_UI_CLIENT_GIT_REPO
@@ -369,7 +376,7 @@ exit 0
     
     ## 
     # FaultedEarth 
-    sudo su - nastasi -c "
+    sudo su - $norm_user -c "
 cd \"$norm_dir\"
 cd oq-ui-client
 sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1FaultedEarth\2@g;s/^\( *\).*\(Build File.*\)$/\1FaultedEarth \2/g' build.xml
@@ -380,7 +387,7 @@ ant static-war
 
     ##
     # geodetic
-    sudo su - nastasi -c "
+    sudo su - $norm_user -c "
 cd \"$norm_dir\"
 cd oq-ui-client
 sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1geodetic\2@g;s/^\( *\).*\(Build File.*\)$/\1geodetic \2/g' build.xml
@@ -404,7 +411,11 @@ ant static-war
 
     service tomcat6 stop
     
-    sudo -u $norm_user -i "cd $norm_dir ; test ! -d oq-ui-geoserver || rm -ir oq-ui-geoserver ; git clone $GEM_OQ_UI_GEOSERVER_GIT_REPO"
+    sudo su - $norm_user -c "
+cd $norm_dir
+test ! -d oq-ui-geoserver || rm -ir oq-ui-geoserver
+git clone $GEM_OQ_UI_GEOSERVER_GIT_REPO
+"
     mkreqdir -d "$GEM_BASEDIR"/oq-ui-geoserver
     cd oq-ui-geoserver
     git archive $GEM_OQ_UI_GEOSERVER_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-geoserver
