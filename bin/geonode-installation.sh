@@ -180,11 +180,11 @@ geonode_installation () {
     ###
     echo "== Geonode installation ==" 
     defa="$GEM_HOSTNAME"
-    read -p "Public site url or public IP address [$defa]: " SITE_URL
-    if [ "$SITE_URL" = "" ]; then
-        SITE_URL="$defa"
+    read -p "Public site url or public IP address [$defa]: " SITE_HOST
+    if [ "$SITE_HOST" = "" ]; then
+        SITE_HOST="$defa"
     fi
-    export SITE_URL
+    export SITE_HOST
     apt-get install -y python-software-properties
     add-apt-repository ppa:geonode/release
 #
@@ -203,7 +203,7 @@ geonode_installation () {
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
     apt-get install -y geonode
     
-    sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_URL/'@g" "$GEM_GN_LOCSET"
+    sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
     if [ $? -ne 0 ]; then
         sed -i 's@\(^WSGIDaemonProcess.*$\)@\1:/var/lib/geonode/src/GeoNodePy/geonode@g' /etc/apache2/sites-available/geonode
@@ -211,7 +211,7 @@ geonode_installation () {
 
     service tomcat6 restart
     service apache2 restart
-    wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "http://$SITE_URL/"
+    wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "http://$SITE_HOST/"
 
     head -n 1 "$GEM_TMPDIR/test_geonode.html" > "$GEM_TMPDIR/test_geonode.http"
     grep -q 200 "$GEM_TMPDIR/test_geonode.http"
@@ -265,12 +265,12 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
     if [ $? -ne 0 ]; then
         echo "\
 SCHEMATA_DOMAINS = { 
-  '$SITE_URL': {
+  '$SITE_HOST': {
     'schema_name': 'public',
     }
   }" >> "$GEM_GN_LOCSET"
     else
-        schemata_config_add "$SITE_URL" "public"
+        schemata_config_add "$SITE_HOST" "public"
     fi
 
     grep -q '^SOUTH_DATABASE_ADAPTERS[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
@@ -353,7 +353,7 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     source bin/activate
     cd src/GeoNodePy/geonode/
     python ./manage.py manage_schemata
-    export DJANGO_SCHEMATA_DOMAIN="$SITE_URL"
+    export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py syncdb
     export DJANGO_SCHEMATA_DOMAIN=geodetic
     python ./manage.py migrate geodetic
@@ -481,7 +481,7 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     for conf_file in /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml /etc/geonode/geoserver/web.xml; do
         fname="$(basename "$conf_file")"
         cat "$conf_file" | \
-        sed -n '/^.*<param-name>GEONODE_BASE_URL<\/param-name>/{p;n;x;d};p'   | sed "s@^\( *\)\(<param-name>GEONODE_BASE_URL</param-name>.*\)@\1\2\n\1<param-value>http://$SITE_URL/</param-value>@g" | \
+        sed -n '/^.*<param-name>GEONODE_BASE_URL<\/param-name>/{p;n;x;d};p'   | sed "s@^\( *\)\(<param-name>GEONODE_BASE_URL</param-name>.*\)@\1\2\n\1<param-value>http://$SITE_HOST/</param-value>@g" | \
         sed -n '/^.*<param-name>GEOSERVER_DATA_DIR<\/param-name>/{p;n;x;d};p' | sed "s@^\( *\)\(<param-name>GEOSERVER_DATA_DIR</param-name>.*\)@\1\2\n\1<param-value>/var/lib/tomcat6/webapps/geoserver/data/</param-value>@g" > $GEM_TMPDIR/${fname}.new
     cp $GEM_TMPDIR/${fname}.new "$conf_file"
 
@@ -492,7 +492,7 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
-    export DJANGO_SCHEMATA_DOMAIN="$SITE_URL"
+    export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py updatelayers
     deactivate
     
@@ -501,7 +501,7 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 #  THE END
 #
 
-    # echo "From root we have: norm_user: $norm_user  norm_dir: $norm_dir SITE_URL: $SITE_URL"
+    # echo "From root we have: norm_user: $norm_user  norm_dir: $norm_dir SITE_HOST: $SITE_HOST"
     return 0    
 }
 
