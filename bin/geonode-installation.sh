@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: 0.1.1
+# Version: 0.2.1-bmw-branch
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -13,14 +13,27 @@
 export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
-export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=fc689867330f78c883d1283a2542bdba12835083
+export       GEM_OQ_UI_API_GIT_REPO=git://github.com/bwyss/oq-ui-api.git
+export       GEM_OQ_UI_API_GIT_VERS=7b0a433d9b2e95dc043ffd14df238d88b7f2e2ad
 
-export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=2224d2eff6ca5ec8de33372a40a1c7fccaa0469f
+export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/bwyss/oq-ui-client.git
+export    GEM_OQ_UI_CLIENT_GIT_VERS=caf979ccf29db7b87ebdc7ea3b794237a3234463
 
-export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=fbe1f48f1e40dd91e1e2dfcad5bebaf20a208b1e
+export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/bwyss/oq-ui-geoserver.git
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=0f13e0eabe4f43c0d26c8ee4c0fe2f372e4a43fa
+
+
+# export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
+# export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
+
+# export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
+# export       GEM_OQ_UI_API_GIT_VERS=fc689867330f78c883d1283a2542bdba12835083
+
+# export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
+# export    GEM_OQ_UI_CLIENT_GIT_VERS=2224d2eff6ca5ec8de33372a40a1c7fccaa0469f
+
+# export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
+# export GEM_OQ_UI_GEOSERVER_GIT_VERS=fbe1f48f1e40dd91e1e2dfcad5bebaf20a208b1e
 export GEM_DB_NAME="geonode_dev"
 
 #
@@ -162,10 +175,10 @@ geonode_installation () {
     
     ###
     echo "== General requirements ==" 
-    apt-get install -y git ant openjdk-6-jdk
+    apt-get install -y git ant openjdk-6-jdk make python-lxml
 
     ###
-    echo "== Geonode installation==" 
+    echo "== Geonode installation ==" 
     defa="$GEM_HOSTNAME"
     read -p "Public site url or public IP address [$defa]: " SITE_URL
     if [ "$SITE_URL" = "" ]; then
@@ -174,6 +187,9 @@ geonode_installation () {
     export SITE_URL
     apt-get install -y python-software-properties
     add-apt-repository ppa:geonode/release
+#
+# NOTE: this part was used to change the apt geonode repository
+#
 #    if [ -f /etc/apt/sources.list.d/geonode-release-maverick.list ]; then
 #        mv /etc/apt/sources.list.d/geonode-release-maverick.list /etc/apt/sources.list.d/geonode-release-natty.list
 #        sed -i 's/maverick/natty/g' /etc/apt/sources.list.d/geonode-release-natty.list
@@ -185,7 +201,6 @@ geonode_installation () {
     apt-get update
     export PATH=/usr/lib/python-django/bin:$PATH
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
-# if [ 0 -eq 1 ]; then
     apt-get install -y geonode
     
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_URL/'@g" "$GEM_GN_LOCSET"
@@ -208,7 +223,6 @@ geonode_installation () {
         read -p "press ENTER to continue or CTRL+C to abort:" a
     fi
 
-# fi
     ###
     echo "== Django-South and Django-Schemata installation =="
         
@@ -224,7 +238,7 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
     apt-get install -y python-django-south
 
     ###
-    #  Django-South configuration
+    echo "== Django-South configuration =="
 
     ##
     #    /var/lib/geonode/src/GeoNodePy/geonode/settings.py
@@ -311,21 +325,25 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
 
     sudo su - $norm_user -c "
 cd $norm_dir 
-test ! -d oq-ui-api || rm -ir oq-ui-api 
+test ! -d oq-ui-api || rm -Ir oq-ui-api 
 git clone $GEM_OQ_UI_API_GIT_REPO"
     mkreqdir -d "$GEM_BASEDIR"/oq-ui-api
     cd oq-ui-api
     git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-api
     ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/geodetic     /var/lib/geonode/src/GeoNodePy/geonode/geodetic
     ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
+    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
+
      
     ##
     # /etc/geonode/local_settings.py    
-    schemata_config_add 'geodetic' 'geodetic'
-    schemata_config_add 'observations' 'gem'
+    schemata_config_add 'geodetic'      'geodetic'
+    schemata_config_add 'observations'  'gem'
+    schemata_config_add 'ged4gem'       'eqged'
 
     ##
     # /var/lib/geonode/src/GeoNodePy/geonode/settings.py    
+    installed_apps_add 'geonode.ged4gem'
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
 
@@ -341,16 +359,16 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     python ./manage.py migrate geodetic
     export DJANGO_SCHEMATA_DOMAIN=observations
     python ./manage.py migrate observations
-    deactivate
-    
+    export DJANGO_SCHEMATA_DOMAIN=ged4gem
+    python ./manage.py migrate ged4gem
+
     cd $norm_dir
 
     ##
-    echo "Add 'FaultedEarth' and 'geodetic'' client applications"
-
+    echo "Add 'FaultedEarth', 'geodetic', 'GED4GEM_country' and 'GED4GEM_Exposure' client applications"
     sudo su - $norm_user -c "
 cd \"$norm_dir\"
-test ! -d oq-ui-client || rm -ir oq-ui-client
+test ! -d oq-ui-client || rm -Ir oq-ui-client
 git clone $GEM_OQ_UI_CLIENT_GIT_REPO
 cd oq-ui-client
 git checkout $GEM_OQ_UI_CLIENT_GIT_VERS
@@ -397,29 +415,56 @@ ant static-war
     cp oq-ui-client/build/geodetic.war /var/lib/tomcat6/webapps/
  
     ##
+    # GED4GEM_country 
+    sudo su - $norm_user -c "
+cd \"$norm_dir\"
+cd oq-ui-client
+sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1GED4GEM_country\2@g;s/^\( *\).*\(Build File.*\)$/\1GED4GEM_country \2/g' build.xml
+cp app/static/index_GED_country.html app/static/index.html 
+ant static-war
+"
+    cp oq-ui-client/build/GED4GEM_country.war /var/lib/tomcat6/webapps/
+
+    ##
+    # GED4GEM_Exposure
+    sudo su - $norm_user -c "
+cd \"$norm_dir\"
+cd oq-ui-client
+sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1GED4GEM_Exposure\2@g;s/^\( *\).*\(Build File.*\)$/\1GED4GEM_Exposure \2/g' build.xml
+cp app/static/index_GED_exposure.html app/static/index.html 
+ant static-war
+"
+    cp oq-ui-client/build/GED4GEM_Exposure.war /var/lib/tomcat6/webapps/
+
+    ##
     # configuration
     apache_append_proxy 'ProxyPass /FaultedEarth http://localhost:8080/FaultedEarth'
     apache_append_proxy 'ProxyPassReverse /FaultedEarth http://localhost:8080/FaultedEarth'
     apache_append_proxy 'ProxyPass /geodetic http://localhost:8080/geodetic'
     apache_append_proxy 'ProxyPassReverse /geodetic http://localhost:8080/geodetic'
+    apache_append_proxy 'ProxyPass /GED4GEM_country http://localhost:8080/GED4GEM_country'
+    apache_append_proxy 'ProxyPassReverse /GED4GEM_country http://localhost:8080/GED4GEM_country'
+    apache_append_proxy 'ProxyPass /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
+    apache_append_proxy 'ProxyPassReverse /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
 
     service tomcat6 restart
     service apache2 restart
 
     ###
-    # custom geoserver installation
+    echo "== Custom geoserver installation =="
 
     service tomcat6 stop
     
     sudo su - $norm_user -c "
 cd $norm_dir
-test ! -d oq-ui-geoserver || rm -ir oq-ui-geoserver
+test ! -d oq-ui-geoserver || rm -Ir oq-ui-geoserver
 git clone $GEM_OQ_UI_GEOSERVER_GIT_REPO
+cd oq-ui-geoserver
+git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 "
     mkreqdir -d "$GEM_BASEDIR"/oq-ui-geoserver
     cd oq-ui-geoserver
-    git archive $GEM_OQ_UI_GEOSERVER_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-geoserver
-    chown -R tomcat6.tomcat6 "$GEM_BASEDIR"/oq-ui-geoserver
+    make deploy
     if [ -d /var/lib/tomcat6/webapps/geoserver -a ! -L /var/lib/tomcat6/webapps/geoserver ]; then
         mv /var/lib/tomcat6/webapps/geoserver "$GEM_BASEDIR"/geoserver.orig
     fi
@@ -429,12 +474,28 @@ git clone $GEM_OQ_UI_GEOSERVER_GIT_REPO
 
     ##
     # configuration
-    cat /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml | \
+    if [ ! -f /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml -o ! -f /etc/geonode/geoserver/web.xml ]; then
+        echo "geoserver configuration file not found"
+        return 6
+    fi
+    for conf_file in /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml /etc/geonode/geoserver/web.xml; do
+        fname="$(basename "$conf_file")"
+        cat "$conf_file" | \
         sed -n '/^.*<param-name>GEONODE_BASE_URL<\/param-name>/{p;n;x;d};p'   | sed "s@^\( *\)\(<param-name>GEONODE_BASE_URL</param-name>.*\)@\1\2\n\1<param-value>http://$SITE_URL/</param-value>@g" | \
-        sed -n '/^.*<param-name>GEOSERVER_DATA_DIR<\/param-name>/{p;n;x;d};p' | sed "s@^\( *\)\(<param-name>GEOSERVER_DATA_DIR</param-name>.*\)@\1\2\n\1<param-value>/var/lib/tomcat6/webapps/geoserver/data/</param-value>@g" > $GEM_TMPDIR/web.xml.new
-    cp $GEM_TMPDIR/web.xml.new /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml
+        sed -n '/^.*<param-name>GEOSERVER_DATA_DIR<\/param-name>/{p;n;x;d};p' | sed "s@^\( *\)\(<param-name>GEOSERVER_DATA_DIR</param-name>.*\)@\1\2\n\1<param-value>/var/lib/tomcat6/webapps/geoserver/data/</param-value>@g" > $GEM_TMPDIR/${fname}.new
+    cp $GEM_TMPDIR/${fname}.new "$conf_file"
 
     service tomcat6 start
+
+    ##
+    # final alignment 
+    cd /var/lib/geonode/
+    source bin/activate
+    cd src/GeoNodePy/geonode/
+    export DJANGO_SCHEMATA_DOMAIN="$SITE_URL"
+    python ./manage.py updatelayers
+    deactivate
+    
 
 #
 #  THE END
