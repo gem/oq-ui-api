@@ -23,8 +23,12 @@ import jpype
 import shapely
 from django.contrib.gis.geos.collections import Polygon
 from django.conf import settings
-
+import logging 
 from geonode.observations import models
+log = logging.getLogger("django.feeds.utils")
+
+SLIP_COM_DEFAULT=0
+ASEIS_SLIP_DEFAULT=0
 
 
 def fault_poly_from_mls(fault_source_geom, dip,
@@ -108,10 +112,11 @@ def create_faultsource(fault, name):
     fault_name
     contrib
     compiler
+    created
     """.strip().split()
 
     a = dict((attrib_name, getattr(fault, attrib_name))
-             for attrib_name in verbatim_attributes)
+             for attrib_name in verbatim_attributes if getattr(fault, attrib_name) != None)
     a.update(dict(
         width_min=(a['low_d_min'] - a['u_sm_d_max']) / sin(a['dip_max']),
         width_max=(a['low_d_max'] - a['u_sm_d_min']) / sin(a['dip_min']),
@@ -151,12 +156,15 @@ def create_faultsource(fault, name):
     ))
     a.update(dict(
         all_com=(a['u_sm_d_com'] + a['low_d_com'] + a['dip_com'] + a['dip_dir']
-                 + a['slip_com'] + 5 * a['slip_r_com'] + a['aseis_slip']) / 11
+                 + a.get('slip_com', SLIP_COM_DEFAULT) + 5 * a['slip_r_com'] + a.get('aseis_slip', ASEIS_SLIP_DEFAULT)) / 11
     ))
 
+    log.info("Trying to create FaultSource with params %s for fault %s" % (a, fault))
     faultsource = models.FaultSource.objects.create(
         fault=fault, source_nm=name, geom=polygon, **a
     )
 
+    log.debug("d'a fault source name %s" % faultsource.fault) 
+    
     return faultsource
 
