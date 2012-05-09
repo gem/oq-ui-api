@@ -56,10 +56,17 @@ def fault_poly_from_mls(fault_source_geom, dip,
     #: Value is in kilometers
     GRID_SPACING = 1.0
 
+    import logging
+    log = logging.getLogger("django.feeds.utils")
+
     if not jpype.isJVMStarted():
         # start jvm once
+        log.debug('starting jvm')
         jpype.startJVM(jpype.getDefaultJVMPath(),
                        "-Djava.ext.dirs=%s" % settings.GEOCLUDGE_JAR_PATH)
+
+    if not jpype.isThreadAttachedToJVM():
+        jpype.attachThreadToJVM()
 
     FT = jpype.JClass('org.opensha.sha.faultSurface.FaultTrace')
     LOC = jpype.JClass('org.opensha.commons.geo.Location')
@@ -69,12 +76,14 @@ def fault_poly_from_mls(fault_source_geom, dip,
     coords = fault_source_geom.coords
 
     fault_trace = FT('')
+
     for line_str in coords:
         for lon, lat in line_str:
             # warning: the ordering of lat/lon is switched here
             # be careful
             loc = LOC(lat, lon)
             fault_trace.add(loc)
+
 
     surface = SGS(fault_trace, float(dip),
                   float(upp_seis_depth), float(low_seis_depth),
@@ -99,6 +108,8 @@ def create_faultsource(fault, name):
     )
 
     sin = lambda degrees: math.sin(math.radians(degrees))
+
+    log.info("Something happened")
 
     # these attributes are copied from the corresponding fault
     verbatim_attributes = """
