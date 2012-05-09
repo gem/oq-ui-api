@@ -154,17 +154,17 @@ geonode_installation () {
     norm_user="$1"
     norm_dir="$2"
 
+    ###
+    # Verify if the distribution is compliant with the script.
+    check_distro
+    ret=$?
+
     defa="$GEM_HOSTNAME"
     read -p "Public site url or public IP address [$defa]: " SITE_HOST
     if [ "$SITE_HOST" = "" ]; then
         SITE_HOST="$defa"
     fi
     export SITE_HOST
-
-    ###
-    # Verify if the distribution is compliant with the script.
-    check_distro
-    ret=$?
 
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
