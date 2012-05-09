@@ -154,6 +154,13 @@ geonode_installation () {
     norm_user="$1"
     norm_dir="$2"
 
+    defa="$GEM_HOSTNAME"
+    read -p "Public site url or public IP address [$defa]: " SITE_HOST
+    if [ "$SITE_HOST" = "" ]; then
+        SITE_HOST="$defa"
+    fi
+    export SITE_HOST
+
     ###
     # Verify if the distribution is compliant with the script.
     check_distro
@@ -179,12 +186,13 @@ geonode_installation () {
 
     ###
     echo "== Geonode installation ==" 
-    defa="$GEM_HOSTNAME"
-    read -p "Public site url or public IP address [$defa]: " SITE_HOST
-    if [ "$SITE_HOST" = "" ]; then
-        SITE_HOST="$defa"
-    fi
-    export SITE_HOST
+    # moved at the top of the function 
+    # defa="$GEM_HOSTNAME"
+    # read -p "Public site url or public IP address [$defa]: " SITE_HOST
+    # if [ "$SITE_HOST" = "" ]; then
+    #     SITE_HOST="$defa"
+    # fi
+    # export SITE_HOST
     apt-get install -y python-software-properties
     add-apt-repository ppa:geonode/release
 #
