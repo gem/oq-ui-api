@@ -17,7 +17,7 @@ export       GEM_OQ_UI_API_GIT_REPO=git://github.com/bwyss/oq-ui-api.git
 export       GEM_OQ_UI_API_GIT_VERS=7b0a433d9b2e95dc043ffd14df238d88b7f2e2ad
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/bwyss/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=caf979ccf29db7b87ebdc7ea3b794237a3234463
+export    GEM_OQ_UI_CLIENT_GIT_VERS=0b688aca16233491bcbd23cd62fcff9bd276f5f9
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/bwyss/oq-ui-geoserver.git
 export GEM_OQ_UI_GEOSERVER_GIT_VERS=0f13e0eabe4f43c0d26c8ee4c0fe2f372e4a43fa
@@ -498,6 +498,7 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 
     ##
     # final alignment 
+    sleep 20
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
