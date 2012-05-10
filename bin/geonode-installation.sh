@@ -158,7 +158,16 @@ geonode_installation () {
     # Verify if the distribution is compliant with the script.
     check_distro
     ret=$?
+    distdesc=" $(lsb_release  -d | sed 's/Description:[ 	]*//g')" 
+    if [ $ret -eq 1 ]; then
+        echo "WARNING: this script is designed to run on Ubuntu 10.10, not on ${distdesc}." 
+        read -p "press ENTER to continue AT YOUR OWN RISK or CTRL+C to abort." a
+    elif [ $ret -eq 2 ]; then
+        echo "ERROR: ${distdesc} not supported" 
+        exit 1
+    fi
 
+    # Get public name info
     defa="$GEM_HOSTNAME"
     read -p "Public site url or public IP address [$defa]: " SITE_HOST
     if [ "$SITE_HOST" = "" ]; then
@@ -170,15 +179,6 @@ geonode_installation () {
     rm -rf "$GEM_TMPDIR"/*
 
     mkreqdir "$GEM_BASEDIR"
-
-    distdesc=" $(lsb_release  -d | sed 's/Description:[ 	]*//g')" 
-    if [ $ret -eq 1 ]; then
-        echo "WARNING: this script is designed to run on Ubuntu 10.10, not on ${distdesc}." 
-        read -p "press ENTER to continue AT YOUR OWN RISK or CTRL+C to abort." a
-    elif [ $ret -eq 2 ]; then
-        echo "ERROR: ${distdesc} not supported" 
-        exit 1
-    fi
     
     ###
     echo "== General requirements ==" 
