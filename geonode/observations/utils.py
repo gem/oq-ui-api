@@ -23,8 +23,12 @@ import jpype
 import shapely
 from django.contrib.gis.geos.collections import Polygon
 from django.conf import settings
-
+import logging 
 from geonode.observations import models
+log = logging.getLogger("django.feeds.utils")
+
+SLIP_COM_DEFAULT=0
+ASEIS_SLIP_DEFAULT=0
 
 
 def fault_poly_from_mls(fault_source_geom, dip,
@@ -52,10 +56,17 @@ def fault_poly_from_mls(fault_source_geom, dip,
     #: Value is in kilometers
     GRID_SPACING = 1.0
 
+    import logging
+    log = logging.getLogger("django.feeds.utils")
+
     if not jpype.isJVMStarted():
         # start jvm once
+        log.debug('starting jvm')
         jpype.startJVM(jpype.getDefaultJVMPath(),
                        "-Djava.ext.dirs=%s" % settings.GEOCLUDGE_JAR_PATH)
+
+    if not jpype.isThreadAttachedToJVM():
+        jpype.attachThreadToJVM()
 
     FT = jpype.JClass('org.opensha.sha.faultSurface.FaultTrace')
     LOC = jpype.JClass('org.opensha.commons.geo.Location')
@@ -65,12 +76,14 @@ def fault_poly_from_mls(fault_source_geom, dip,
     coords = fault_source_geom.coords
 
     fault_trace = FT('')
+
     for line_str in coords:
         for lon, lat in line_str:
             # warning: the ordering of lat/lon is switched here
             # be careful
             loc = LOC(lat, lon)
             fault_trace.add(loc)
+
 
     surface = SGS(fault_trace, float(dip),
                   float(upp_seis_depth), float(low_seis_depth),
@@ -96,6 +109,8 @@ def create_faultsource(fault, name):
 
     sin = lambda degrees: math.sin(math.radians(degrees))
 
+    log.info("Something happened")
+
     # these attributes are copied from the corresponding fault
     verbatim_attributes = """
     length_min length_max length_pre
@@ -108,10 +123,11 @@ def create_faultsource(fault, name):
     fault_name
     contrib
     compiler
+    created
     """.strip().split()
 
     a = dict((attrib_name, getattr(fault, attrib_name))
-             for attrib_name in verbatim_attributes)
+             for attrib_name in verbatim_attributes if getattr(fault, attrib_name) != None)
     a.update(dict(
         width_min=(a['low_d_min'] - a['u_sm_d_max']) / sin(a['dip_max']),
         width_max=(a['low_d_max'] - a['u_sm_d_min']) / sin(a['dip_min']),
@@ -151,12 +167,15 @@ def create_faultsource(fault, name):
     ))
     a.update(dict(
         all_com=(a['u_sm_d_com'] + a['low_d_com'] + a['dip_com'] + a['dip_dir']
-                 + a['slip_com'] + 5 * a['slip_r_com'] + a['aseis_slip']) / 11
+                 + a.get('slip_com', SLIP_COM_DEFAULT) + 5 * a['slip_r_com'] + a.get('aseis_slip', ASEIS_SLIP_DEFAULT)) / 11
     ))
 
+    log.info("Trying to create FaultSource with params %s for fault %s" % (a, fault))
     faultsource = models.FaultSource.objects.create(
         fault=fault, source_nm=name, geom=polygon, **a
     )
 
+    log.debug("d'a fault source name %s" % faultsource.fault) 
+    
     return faultsource
 
