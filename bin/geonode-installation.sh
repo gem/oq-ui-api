@@ -17,7 +17,7 @@ export       GEM_OQ_UI_API_GIT_REPO=git://github.com/bwyss/oq-ui-api.git
 export       GEM_OQ_UI_API_GIT_VERS=7b0a433d9b2e95dc043ffd14df238d88b7f2e2ad
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/bwyss/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=0b688aca16233491bcbd23cd62fcff9bd276f5f9
+export    GEM_OQ_UI_CLIENT_GIT_VERS=22f2ec74a638b7c22d71b04022f79eb56bfe6c3b
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/bwyss/oq-ui-geoserver.git
 export GEM_OQ_UI_GEOSERVER_GIT_VERS=0f13e0eabe4f43c0d26c8ee4c0fe2f372e4a43fa
@@ -45,6 +45,7 @@ export GEM_TMPDIR="gem_tmp"
 export GEM_BASEDIR="/var/lib/openquake"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
+export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
 export NL='
 '
 
@@ -304,7 +305,8 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
 "
     
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
-    
+    sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1geonode_dev@g" "$GEM_NW_SETTINGS"
+
     service apache2 start
     service tomcat6 start
 
@@ -498,7 +500,7 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 
     ##
     # final alignment 
-    sleep 20
+    sleep 30
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
