@@ -13,27 +13,15 @@
 export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
-export       GEM_OQ_UI_API_GIT_REPO=git://github.com/bwyss/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=540e7b8e49d6f24dc9f7543536b76f668d215786
+export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
+export       GEM_OQ_UI_API_GIT_VERS=7593db206125a079b43dc066f902e1648e7fff4a
 
-export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/bwyss/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=22f2ec74a638b7c22d71b04022f79eb56bfe6c3b
+export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
+export    GEM_OQ_UI_CLIENT_GIT_VERS=69223e4d827f41c9939790f629ab347403398ae4
 
-export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/bwyss/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=20b36819c37573ca1100b894aacaab9e137dd1f5
+export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=273ea1b1db21b395ac7ae7b7a28843cfe91bd17b
 
-
-# export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
-# export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
-
-# export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-# export       GEM_OQ_UI_API_GIT_VERS=fc689867330f78c883d1283a2542bdba12835083
-
-# export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-# export    GEM_OQ_UI_CLIENT_GIT_VERS=2224d2eff6ca5ec8de33372a40a1c7fccaa0469f
-
-# export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-# export GEM_OQ_UI_GEOSERVER_GIT_VERS=fbe1f48f1e40dd91e1e2dfcad5bebaf20a208b1e
 export GEM_DB_NAME="geonode_dev"
 
 #
@@ -46,6 +34,7 @@ export GEM_BASEDIR="/var/lib/openquake"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
+export GEM_TOMCAT_LOGFILE="/var/log/geonode/tomcat.log"
 export NL='
 '
 export TB='	'
@@ -63,6 +52,25 @@ usage () {
     echo "  Run the command from your normal user account"
     exit $err
 }
+
+# tomcat_wait_start is a function that check if the tomcat daemon complete it's boot
+# looking inside it's log file searching the "INFO: Server startup" line
+tomcat_wait_start () {
+    local tws_i log_cur every nloop
+
+    log_cur=$1
+    every=$2
+    nloop=$3
+
+    for tws_i in $(seq 1 $nloop); do
+        tail -n +$log_cur $GEM_TOMCAT_LOGFILE | grep -q "^INFO: Server startup "
+        if [ $? -eq 0 ]; then
+            return 0
+        fi
+        sleep $every
+    done
+    return 1
+    }
 
 # this function create a required directory. if fails the script exits with error level 2
 # with '-d' flag try to remove the dir before creation
@@ -497,16 +505,14 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         cp $GEM_TMPDIR/${fname}.new "$conf_file"
     done
 
+    tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
     service tomcat6 start
-
     ##
-    # final alignment 
+    # final alignment
 
-# NOTE
-#   substitute the sleep with waiting on /var/log/geonode/tomcat.log for
-#   wait on this line "INFO: Server startup "...
-
-    sleep 40
+    # check if tomcat had finish it's startup (try every 5 secs for 24 times => 2 mins)
+    tomcat_wait_start $tc_log_cur 5 24
+    sleep 5
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
