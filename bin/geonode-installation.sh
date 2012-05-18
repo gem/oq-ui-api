@@ -138,7 +138,7 @@ check_distro () {
     rel="$(lsb_release -r  | sed 's/^Release:[ 	]*//g')" 
     if [ "$distro" != "Ubuntu" ]; then
         return 2
-    elif [ "$rel" != "10.10" ]; then
+    elif [ "$rel" != "10.10" -a "$rel" != "11.04" ]; then
         return 1
     fi
     return 0
