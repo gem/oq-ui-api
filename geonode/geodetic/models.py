@@ -24,9 +24,8 @@ from django.contrib.gis.db import models
 
 class Geodetic(models.Model):
     gid = models.IntegerField()
-    table_id = models.IntegerField()
     lat = models.FloatField(null=True, blank=True)
-    longi = models.FloatField(null=True, blank=True)
+    lon = models.FloatField(null=True, blank=True)
     exx = models.FloatField(null=True, blank=True)
     eyy = models.FloatField(null=True, blank=True)
     exy = models.FloatField(null=True, blank=True)
@@ -39,4 +38,4 @@ class Geodetic(models.Model):
     x_azimuth = models.FloatField(null=True, blank=True)
     exx_psr = models.FloatField(null=True, blank=True)
     eyy_psr = models.FloatField(null=True, blank=True)
-    geom = models.PolygonField(srid=4326, dim=3)
+    the_geom = models.PointField(srid=4326, dim=2)

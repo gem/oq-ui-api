@@ -146,6 +146,8 @@ class Fault(models.Model):
     created = models.DateField(null=True, blank=True)
     simple_geom = models.MultiLineStringField(srid=4326, null=True, blank=True)
 
+    def __unicode__(self):
+        return "Fault %s %s" % (self.pk, self.fault_name)
 
 class FaultSection(models.Model):
     fault = models.ManyToManyField('Fault')
