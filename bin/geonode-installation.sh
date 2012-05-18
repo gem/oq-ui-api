@@ -14,13 +14,13 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/bwyss/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=7b0a433d9b2e95dc043ffd14df238d88b7f2e2ad
+export       GEM_OQ_UI_API_GIT_VERS=540e7b8e49d6f24dc9f7543536b76f668d215786
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/bwyss/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=22f2ec74a638b7c22d71b04022f79eb56bfe6c3b
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/bwyss/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=0f13e0eabe4f43c0d26c8ee4c0fe2f372e4a43fa
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=20b36819c37573ca1100b894aacaab9e137dd1f5
 
 
 # export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
@@ -48,6 +48,7 @@ export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
 export NL='
 '
+export TB='	'
 
 #
 # FUNCTIONS
@@ -500,7 +501,12 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 
     ##
     # final alignment 
-    sleep 30
+
+# NOTE
+#   substitute the sleep with waiting on /var/log/geonode/tomcat.log for
+#   wait on this line "INFO: Server startup "...
+
+    sleep 40
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
@@ -517,10 +523,67 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     return 0    
 }
 
+
+
 #
 #  MAIN
 #
 wai="$(whoami)"
+setgit=
+#
+#  args management
+while [ $# -gt 0 ]; do
+    case $1 in
+        -s | --setgit)
+            setgit=1
+            shift            
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+if [ $setgit ]; then
+    echo "settato"
+    git_commit="$(git log -1 --pretty=format:%H)"
+    if [ $? -ne 0 ]; then
+        echo "Git commit version not found"
+        exit 1
+    fi
+    git_repos="$(git remote -v | grep "(fetch)$")"
+    git_repos_n="$(echo "$git_repos" | wc -l)"
+
+    if [ $git_repos_n -eq 1 ]; then
+        git_repo="$(echo "$git_rems" | awk '{ printf("%s\n", $2); }')"
+    else
+        echo "More then 1 remote repository found:"
+        while [ true ]; do
+            IFS="$NL"
+            ct=1
+            for rem_item in $git_repos; do
+                echo "$ct)${TB}$rem_item"
+                ct=$((ct + 1))
+            done
+            read -p "Choose (1 - $git_repos_n): " ch
+            echo "$ch" | grep -q '^[-+]\?[0-9]\+$'
+            if [ $? -ne 0 ]; then
+                continue
+            fi
+            if [ "$ch" -ge 1 -a "$ch" -le $git_repos_n ]; then
+                break
+            fi
+        done
+        IFS='$NL	 '
+        git_repo="$(echo "$git_repos" | tail -n +$ch | head -n 1 | awk '{ printf("%s\n", $2); }' )"
+        
+        echo "GIT_REPO:   $git_repo"
+        echo "GIT_COMMIT: $git_commit"
+
+        sed -i "s|^\(export[ 	]\+GEM_OQ_UI_API_GIT_REPO=\).*|\1$git_repo|g;s|^\(export[ 	]\+GEM_OQ_UI_API_GIT_VERS=\).*|\1$git_commit|g" $0 
+    fi
+    exit 0
+fi
 
 if [ "$wai" = "root" ]; then
     if [ $# -eq 2 ]; then
