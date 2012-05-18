@@ -48,8 +48,14 @@ usage () {
     err="$2"
     echo "Usage:"
     echo "  $name"
-    echo 
     echo "  Run the command from your normal user account"
+    echo
+    echo "  $name <-s|--setgit>"
+    echo "  Set current git repo and commit into oq_ui_api script variables"
+    echo
+    echo "  $name <-h|--help>"
+    echo "  This help"
+    echo 
     exit $err
 }
 
@@ -512,7 +518,8 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 
     # check if tomcat had finish it's startup (try every 5 secs for 24 times => 2 mins)
     tomcat_wait_start $tc_log_cur 5 24
-    sleep 5
+    service apache2 restart
+    sleep 10
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
