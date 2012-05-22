@@ -223,7 +223,6 @@ geonode_installation () {
 #        exit 1
 #    fi  
     apt-get update
-    gem_oldpath="$PATH"
     export PATH=/usr/lib/python-django/bin:$PATH
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
     apt-get install -y geonode
@@ -520,10 +519,8 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     # check if tomcat had finish it's startup (try every 5 secs for 24 times => 2 mins)
     tomcat_wait_start $tc_log_cur 5 24
     service apache2 restart
-    sleep 10
+    sleep 30
 
-    unset VIRTUALENV_SYSTEM_SITE_PACKAGES
-    export PATH="$gem_oldpath"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
