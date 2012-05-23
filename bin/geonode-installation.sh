@@ -223,6 +223,7 @@ geonode_installation () {
 #        exit 1
 #    fi  
     apt-get update
+    gem_oldpath="$PATH"
     export PATH=/usr/lib/python-django/bin:$PATH
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
     apt-get install -y geonode
@@ -519,13 +520,26 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     # check if tomcat had finish it's startup (try every 5 secs for 24 times => 2 mins)
     tomcat_wait_start $tc_log_cur 5 24
     service apache2 restart
-    sleep 30
+    sleep 20
 
+    #
+    #  NOTE: for some unknown reasons the last step fails the first time that we run.
+    #        To not waste time to investigate this strage problem we use a "retry approach".
+    #
+
+    unset VIRTUALENV_SYSTEM_SITE_PACKAGES
+    export PATH="$gem_oldpath"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
-    python ./manage.py updatelayers
+    for i in $(seq 1 5); do
+	python ./manage.py updatelayers
+	if [ $? -eq 0 ]; then
+            break
+        fi
+        sleep 20
+    done
     deactivate
     
 
