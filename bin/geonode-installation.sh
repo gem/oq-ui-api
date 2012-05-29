@@ -19,8 +19,12 @@ export       GEM_OQ_UI_API_GIT_VERS=7593db206125a079b43dc066f902e1648e7fff4a
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=69223e4d827f41c9939790f629ab347403398ae4
 
-export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=273ea1b1db21b395ac7ae7b7a28843cfe91bd17b
+# export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
+# export GEM_OQ_UI_GEOSERVER_GIT_VERS=273ea1b1db21b395ac7ae7b7a28843cfe91bd17b
+
+export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/bwyss/oq-ui-geoserver.git
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=1ae2a9527e7a6cd0131022dce1f65f0549300a0e
+
 
 export GEM_DB_NAME="geonode_dev"
 
@@ -33,6 +37,7 @@ export GEM_TMPDIR="gem_tmp"
 export GEM_BASEDIR="/var/lib/openquake"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
+export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
 export GEM_TOMCAT_LOGFILE="/var/log/geonode/tomcat.log"
 export NL='
@@ -198,7 +203,12 @@ geonode_installation () {
     
     ###
     echo "== General requirements ==" 
-    apt-get install -y git ant openjdk-6-jdk make python-lxml
+    apt-get install -y python-software-properties
+    add-apt-repository ppa:geonode/release
+    apt-add-repository ppa:openquake/ppa
+    apt-get update
+
+    apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java
 
     ###
     echo "== Geonode installation ==" 
@@ -209,8 +219,7 @@ geonode_installation () {
     #     SITE_HOST="$defa"
     # fi
     # export SITE_HOST
-    apt-get install -y python-software-properties
-    add-apt-repository ppa:geonode/release
+
 #
 # NOTE: this part was used to change the apt geonode repository
 #
@@ -222,7 +231,6 @@ geonode_installation () {
 #        echo "installation ABORTED"
 #        exit 1
 #    fi  
-    apt-get update
     gem_oldpath="$PATH"
     export PATH=/usr/lib/python-django/bin:$PATH
     export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
@@ -291,11 +299,11 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
         echo "\
 SCHEMATA_DOMAINS = { 
   '$SITE_HOST': {
-    'schema_name': 'public',
+    'schema_name': 'gem',
     }
   }" >> "$GEM_GN_LOCSET"
     else
-        schemata_config_add "$SITE_HOST" "public"
+        schemata_config_add "$SITE_HOST" "gem"
     fi
 
     grep -q '^SOUTH_DATABASE_ADAPTERS[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
@@ -364,7 +372,7 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     ##
     # /etc/geonode/local_settings.py    
     schemata_config_add 'geodetic'      'geodetic'
-    schemata_config_add 'observations'  'gem'
+    schemata_config_add 'django'        'public'
     schemata_config_add 'ged4gem'       'eqged'
 
     ##
@@ -373,17 +381,22 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
 
+    ## add observations to urls.py
+    #     (r'^observations/', include('geonode.observations.urls')),
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
+
+
     ##
     # deploy database
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
     python ./manage.py manage_schemata
-    export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
+    export DJANGO_SCHEMATA_DOMAIN=django
     python ./manage.py syncdb
     export DJANGO_SCHEMATA_DOMAIN=geodetic
     python ./manage.py migrate geodetic
-    export DJANGO_SCHEMATA_DOMAIN=observations
+    export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py migrate observations
     export DJANGO_SCHEMATA_DOMAIN=ged4gem
     python ./manage.py migrate ged4gem
