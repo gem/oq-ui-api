@@ -1,0 +1,97 @@
+
+========================================================================
+
+                        THIS FILE IS OBSOLETE !
+
+              FOR INSTALLATION FOLLOW THE 'INSTALL' FILE.
+
+========================================================================
+
+This Django app contains the observation form for the Faulted Earth tool.
+
+To deploy this app you have to integrate it in geonode. Which is composed of:
+
+ * geonode (django framework)
+ * geoserver (the "mapserver" which provides all the layers/styling and mapping to db
+   tables and much more)
+ * a Client javascript app deployed through geoserver as a war
+
+
+DEPENDENCIES:
+
+    * django south
+    * django schemata
+
+        to be placed inside observations git repository and cloned from
+        https://github.com/tuttle/django-schemata -- this django "layer" is
+        necessary to have postgres' schema support in our django application
+
+        Once this https://code.djangoproject.com/ticket/6148 ticket will be
+        complete there will be no more need to use django-schemata, but this
+        ticket is a work in progress since a lot of time, so I have chosen the
+        django-schemata route.
+
+    * jpype
+    * opensha-lite.jar
+
+        to be placed in /usr/share/java
+
+INSTALLATION (rough instructions)
+
+If you are under Ubuntu follow:
+
+http://docs.geonode.org/en/latest/intro/install.html
+
+in /var/lib/geonode/src/GeoNodePy/geonode/ you should link the app, in this
+case "observations" in this way:
+
+    ln -s /location/of/observations/git /var/lib/geonode/src/GeoNodePy/geonode/observations
+
+you have to adapt/sync /var/lib/geonode/src/GeoNodePy/geonode/settings.py with
+the settings contained in /location/of/observations/git/geonode/settings.py
+
+at geoserver level you have to add a Workspace called geonode and associate a
+datastore that matches with the db you have specified in your settings.py or
+/etc/geonode/local_settings.py
+
+REBUILDING OF THE DB (quick&dirty script)
+
+create an fe-rebuild.sh script which will contain:
+
+#!/bin/bash
+sudo /etc/init.d/postgresql restart
+export DB_NAME="geonode_dev"
+dropdb -U geonode -W $DB_NAME
+createdb -U geonode -W $DB_NAME
+createlang -U geonode -W plpgsql $DB_NAME
+psql -U geonode -W -f /usr/share/postgresql/8.4/contrib/postgis-1.5/postgis.sql $DB_NAME
+psql -U geonode -W -f /usr/share/postgresql/8.4/contrib/postgis-1.5/spatial_ref_sys.sql$
+cd /var/lib/geonode/src/GeoNodePy/geonode/
+source /var/lib/geonode/bin/activate
+python ./manage.py manage_schemata
+export DJANGO_SCHEMATA_DOMAIN="django"
+python ./manage.py syncdb
+#export DJANGO_SCHEMATA_DOMAIN=ged4gem
+#python ./manage.py migrate ged4gem
+#export DJANGO_SCHEMATA_DOMAIN=geodetic
+#python ./manage.py migrate geodetic
+export DJANGO_SCHEMATA_DOMAIN=178.79.187.26
+python ./manage.py migrate observations
+sudo /etc/init.d/tomcat6 restart
+sudo /etc/init.d/apache2 restart
+
+if you want to create a migration use south as usual, i.e.
+
+        python ./manage.py schemamigration observations --auto
+
+after changing your model[s]
+
+and then run:
+
+        python ./manage.py migrate_schemata observations
+
+the 'localhost' namespace will be run, and south will migrate the changes.
+
+*NOTE*: this README is a work in progress, so you can miss some bits here and
+there -- It will be updated as we streamline the process of deploying
+geonode/observations.
