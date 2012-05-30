@@ -14,13 +14,13 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=7593db206125a079b43dc066f902e1648e7fff4a
+export       GEM_OQ_UI_API_GIT_VERS=v0.1.0
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=69223e4d827f41c9939790f629ab347403398ae4
+export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.1.0
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=d5477637b9874a8d2e0a333d62807a015c247006
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.1.0
 
 export GEM_DB_NAME="geonode_dev"
 
