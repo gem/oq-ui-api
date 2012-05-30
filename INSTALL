@@ -1,0 +1,39 @@
+==== Requirements ====
+
+  * ubuntu 11.04 (codename oneiric ocelot)
+  * a user account within 'admin' group
+  * the 'git' package installed on the machine
+  * an internet connection
+  * an IP address or a public FQDN that will be use to address the machine from
+    the extern (we will call it <SITE_HOST>).
+  
+==== Installation ====
+
+  * open a terminal as normal user
+  * create a directory where download all repositories, for example: "geonode_staff".
+      $ mkdir geonode_staff
+  * clone the oq-ui-api repository and move into the new repository with commands:
+      $ git clone git://github.com/gem/oq-ui-api.git
+      $ cd oq-ui-api
+  * checkout the required version of the script with the command
+      $ git checkout <version_name>_inst
+    where <version_name> is the version that you want to install
+  * copy the bin/geonode-installation.sh file into the previous created staff dir:
+      $ cp bin/geonode-installation.sh ../geonode_staff
+  * go into 'geonode_staff' directory and run the installation script:
+      $ cd ../geonode_staff
+      $ ./geonode-installation.sh
+    NOTE: to run some parts the script require root access so it will ask your
+    password to 
+  * the script will ask you "Public site url or public IP address ..."; you must
+    answer with the public name of the machine (see above) <SITE_HOST>
+  * after a while the script will ask to you if you want create a superuser
+    account for administrative purposes, answer "yes" and create it.
+  * after the installation you can browse to "http://<SITE_HOST>" url to see 
+    the local geonode homepage, to "http://<SITE_HOST>/geoserver" to see local geoserver
+    homepage and to "http://<SITE_HOST>/FaultedEarth" to access FE application.
+
+  **NOTE** the script will takes few tens of minutes to finish, if you continuously see
+  new lines of log on the display you can fill safe.
+
+

@@ -1,3 +1,12 @@
+
+========================================================================
+
+                        THIS FILE IS OBSOLETE !
+
+              FOR INSTALLATION FOLLOW THE 'INSTALL' FILE.
+
+========================================================================
+
 This Django app contains the observation form for the Faulted Earth tool.
 
 To deploy this app you have to integrate it in geonode. Which is composed of:

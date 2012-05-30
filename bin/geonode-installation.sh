@@ -19,12 +19,8 @@ export       GEM_OQ_UI_API_GIT_VERS=7593db206125a079b43dc066f902e1648e7fff4a
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=69223e4d827f41c9939790f629ab347403398ae4
 
-# export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-# export GEM_OQ_UI_GEOSERVER_GIT_VERS=273ea1b1db21b395ac7ae7b7a28843cfe91bd17b
-
-export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/bwyss/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=1ae2a9527e7a6cd0131022dce1f65f0549300a0e
-
+export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=d5477637b9874a8d2e0a333d62807a015c247006
 
 export GEM_DB_NAME="geonode_dev"
 
