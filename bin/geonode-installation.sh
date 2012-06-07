@@ -350,7 +350,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
 
     grep -q '^ORIGINAL_BACKEND[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
     if [ $? -eq 0 ]; then
-        sed -i "s/^\(ORIGINAL_BACKEND[ 	]*=[ 	]*['\"]\)[0-9\.]\+\(.*\)/\1django.contrib.gis.db.backends.postgis\2/g" "$GEM_GN_LOCSET"
+        sed -i "s/^\(ORIGINAL_BACKEND[ 	]*=[ 	]*\)\(['\"]\).*/\1\2django.contrib.gis.db.backends.postgis\2/g" "$GEM_GN_LOCSET"
     else
         echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> "$GEM_GN_LOCSET"
     fi
