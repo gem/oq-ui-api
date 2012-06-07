@@ -14,13 +14,13 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v0.1.0
+export       GEM_OQ_UI_API_GIT_VERS=v0.1.1
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.1.0
+export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.1.1
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.1.0
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.1.1
 
 export GEM_DB_NAME="geonode_dev"
 
@@ -36,6 +36,7 @@ export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
 export GEM_TOMCAT_LOGFILE="/var/log/geonode/tomcat.log"
+export GEM_WSGI_CONFIG="/var/www/geonode/wsgi/geonode.wsgi"
 export NL='
 '
 export TB='	'
@@ -238,6 +239,9 @@ geonode_installation () {
         sed -i 's@\(^WSGIDaemonProcess.*$\)@\1:/var/lib/geonode/src/GeoNodePy/geonode@g' /etc/apache2/sites-available/geonode
     fi
 
+    # this fix the bug 972202 to inform jpype module where is the java installation
+    sed -i "s@os.environ\['DJANGO_SETTINGS_MODULE'\] *= *'geonode.settings'@os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'\nos.environ['JAVA_HOME'] = '/usr/lib/jvm/java-6-openjdk'@g" "$GEM_WSGI_CONFIG"
+
     service tomcat6 restart
     service apache2 restart
     wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "http://$SITE_HOST/"
@@ -346,10 +350,18 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
 
     grep -q '^ORIGINAL_BACKEND[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
     if [ $? -eq 0 ]; then
-        sed -i "s/^\(ORIGINAL_BACKEND[ 	]*=[ 	]*['\"]\)[0-9\.]\+\(.*\)/\1django.contrib.gis.db.backends.postgis\2/g" "$GEM_GN_LOCSET"
+        sed -i "s/^\(ORIGINAL_BACKEND[ 	]*=[ 	]*\)\(['\"]\).*/\1\2django.contrib.gis.db.backends.postgis\2/g" "$GEM_GN_LOCSET"
     else
         echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> "$GEM_GN_LOCSET"
     fi
+
+    grep -q '^GEOCLUDGE_JAR_PATH[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
+    if [ $? -eq 0 ]; then
+        sed -i "s@^\(GEOCLUDGE_JAR_PATH[ 	]*=[ 	]*\)\(['\"]\).*@\1\2/usr/share/java\2@g" "$GEM_GN_LOCSET"
+    else
+        echo "GEOCLUDGE_JAR_PATH = '/usr/share/java'" >> "$GEM_GN_LOCSET"
+    fi
+
     ###
     echo "== Add 'geodetic' and 'observations' Django applications =="
 
