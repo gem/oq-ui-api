@@ -354,6 +354,14 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
     else
         echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> "$GEM_GN_LOCSET"
     fi
+
+    grep -q '^GEOCLUDGE_JAR_PATH[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
+    if [ $? -eq 0 ]; then
+        sed -i "s@^\(GEOCLUDGE_JAR_PATH[ 	]*=[ 	]*\)\(['\"]\).*@\1\2/usr/share/java\2@g" "$GEM_GN_LOCSET"
+    else
+        echo "GEOCLUDGE_JAR_PATH = '/usr/share/java'" >> "$GEM_GN_LOCSET"
+    fi
+
     ###
     echo "== Add 'geodetic' and 'observations' Django applications =="
 
