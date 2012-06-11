@@ -369,13 +369,8 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
 cd $norm_dir 
 test ! -d oq-ui-api || rm -Ir oq-ui-api 
 git clone $GEM_OQ_UI_API_GIT_REPO"
-    mkreqdir -d "$GEM_BASEDIR"/oq-ui-api
     cd oq-ui-api
-    git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-api
-    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/geodetic     /var/lib/geonode/src/GeoNodePy/geonode/geodetic
-    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
-    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
-
+    make MKREQDIR_ARG="-d" deploy
      
     ##
     # /etc/geonode/local_settings.py    
