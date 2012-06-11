@@ -12,6 +12,7 @@ mkreqdir () {
         shift
     elif [ $# -gt 1 -a "$1" = "-o" ]; then
         to_old=1
+        shift
     fi
     d="$1"
 
