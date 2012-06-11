@@ -38,7 +38,7 @@ mkreqdir () {
 
 #
 #  MAIN
-export GEM_PROJ=oq_ui_api
+export GEM_PROJ=oq-ui-api
 set | grep -q "^GEM_BASEDIR=" || export GEM_BASEDIR="/var/lib/openquake/"
 set | grep -q "^GEM_OQ_UI_API_GIT_VERS=" || export GEM_OQ_UI_API_GIT_VERS="HEAD"
 set | grep -q "^MKREQDIR_ARG=" || export MKREQDIR_ARG="-o"
