@@ -56,7 +56,7 @@ cp -r etc/geonode/ /etc/
 
 source /var/lib/geonode/bin/activate
 cd /var/lib/geonode/src/GeoNodePy/geonode/
-python ./manage.py collectstatic --noinput
+python ./manage.py collectstatic --noinput >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo
     echo "'python ./manage.py collectstatic --noinput' command failed."
