@@ -370,6 +370,7 @@ cd $norm_dir
 test ! -d oq-ui-api || rm -Ir oq-ui-api 
 git clone $GEM_OQ_UI_API_GIT_REPO"
     cd oq-ui-api
+    git checkout $GEM_OQ_UI_API_GIT_VERS
     make fix
     make MKREQDIR_ARG="-d" deploy
      
