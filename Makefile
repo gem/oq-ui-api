@@ -3,4 +3,7 @@ ALL: deploy
 deploy:
 	./bin/makefile.sh $@
 
-.PHONY: ALL deploy
+fix:
+	./bin/collectstatic_fix.sh
+
+.PHONY: ALL deploy fix

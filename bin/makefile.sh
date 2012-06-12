@@ -54,4 +54,15 @@ fi
 
 cp -r etc/geonode/ /etc/
 
+source /var/lib/geonode/bin/activate
+cd /var/lib/geonode/src/GeoNodePy/geonode/
+python ./manage.py collectstatic --noinput
+if [ $? -ne 0 ]; then
+    echo
+    echo "'python ./manage.py collectstatic --noinput' command failed."
+    echo "Try to run 'make fix' and try again."
+    echo
+    exit 1
+fi
+
 exit 0
