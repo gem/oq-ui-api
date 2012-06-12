@@ -50,19 +50,19 @@ if [ "$1" = "deploy" ]; then
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/geodetic     /var/lib/geonode/src/GeoNodePy/geonode/geodetic
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
-fi
 
-cp -r etc/geonode/ /etc/
+    cp -r etc/geonode/ /etc/
 
-source /var/lib/geonode/bin/activate
-cd /var/lib/geonode/src/GeoNodePy/geonode/
-python ./manage.py collectstatic --noinput >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo
-    echo "'python ./manage.py collectstatic --noinput' command failed."
-    echo "Try to run 'make fix' and try again."
-    echo
-    exit 1
+    source /var/lib/geonode/bin/activate
+    cd /var/lib/geonode/src/GeoNodePy/geonode/
+    python ./manage.py collectstatic --noinput >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo
+        echo "'python ./manage.py collectstatic --noinput' command failed."
+        echo "Try 'sudo make fix' and run 'sudo make deploy' again."
+        echo
+        exit 1
+    fi
 fi
 
 exit 0
