@@ -14,7 +14,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v0.1.1
+export       GEM_OQ_UI_API_GIT_VERS=unify-login
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.1.1
@@ -369,13 +369,10 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
 cd $norm_dir 
 test ! -d oq-ui-api || rm -Ir oq-ui-api 
 git clone $GEM_OQ_UI_API_GIT_REPO"
-    mkreqdir -d "$GEM_BASEDIR"/oq-ui-api
     cd oq-ui-api
-    git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR"/oq-ui-api
-    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/geodetic     /var/lib/geonode/src/GeoNodePy/geonode/geodetic
-    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
-    ln -s "$GEM_BASEDIR"/oq-ui-api/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
-
+    git checkout $GEM_OQ_UI_API_GIT_VERS
+    make fix
+    make MKREQDIR_ARG="-d" deploy
      
     ##
     # /etc/geonode/local_settings.py    
