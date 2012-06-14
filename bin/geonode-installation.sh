@@ -178,7 +178,7 @@ geonode_installation () {
     ret=$?
     distdesc=" $(lsb_release  -d | sed 's/Description:[ 	]*//g')" 
     if [ $ret -eq 1 ]; then
-        echo "WARNING: this script is designed to run on Ubuntu 10.10, not on ${distdesc}." 
+        echo "WARNING: this script is designed to run on Ubuntu 10.10 and 11.04, not on ${distdesc}."
         read -p "press ENTER to continue AT YOUR OWN RISK or CTRL+C to abort." a
     elif [ $ret -eq 2 ]; then
         echo "ERROR: ${distdesc} not supported" 
