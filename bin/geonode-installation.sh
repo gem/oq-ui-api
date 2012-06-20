@@ -363,7 +363,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
     fi
 
     ###
-    echo "== Add 'geodetic' and 'observations' Django applications =="
+    echo "== Add 'geodetic', 'ged4gem', 'observations' and 'isc_viewer' Django applications =="
 
     sudo su - $norm_user -c "
 cd $norm_dir 
@@ -379,12 +379,14 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     schemata_config_add 'geodetic'      'geodetic'
     schemata_config_add 'django'        'public'
     schemata_config_add 'ged4gem'       'eqged'
+    schemata_config_add 'isc_viewer'    'isc_viewer'
 
     ##
     # /var/lib/geonode/src/GeoNodePy/geonode/settings.py    
     installed_apps_add 'geonode.ged4gem'
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
+    installed_apps_add 'geonode.isc_viewer'
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
@@ -401,6 +403,14 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     python ./manage.py syncdb
     export DJANGO_SCHEMATA_DOMAIN=geodetic
     python ./manage.py migrate geodetic
+    export DJANGO_SCHEMATA_DOMAIN=isc_viewer
+    python ./manage.py migrate isc_viewer
+    if [ -f "$norm_dir/private_data/isc_data.csv" ]; then
+        GEM_ISC_DATA="$norm_dir/private_data/isc_data.csv"
+    else
+        GEM_ISC_DATA="$norm_dir/oq-ui-api/data/isc_data.csv"
+    fi
+    python ./manage.py importcsv "$GEM_ISC_DATA"
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py migrate observations
     export DJANGO_SCHEMATA_DOMAIN=ged4gem
@@ -409,7 +419,7 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     cd $norm_dir
 
     ##
-    echo "Add 'FaultedEarth', 'geodetic', 'GED4GEM_country' and 'GED4GEM_Exposure' client applications"
+    echo "Add 'FaultedEarth', 'geodetic', 'isc_viewer', 'GED4GEM_country' and 'GED4GEM_Exposure' client applications"
     sudo su - $norm_user -c "
 cd \"$norm_dir\"
 test ! -d oq-ui-client || rm -Ir oq-ui-client
@@ -457,7 +467,17 @@ cp app/static/index_geodetic.html app/static/index.html
 ant static-war
 "
     cp oq-ui-client/build/geodetic.war /var/lib/tomcat6/webapps/
- 
+    ##
+    # isc_viewer
+    sudo su - $norm_user -c "
+cd \"$norm_dir\"
+cd oq-ui-client
+sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1isc_viewer\2@g;s/^\( *\).*\(Build File.*\)$/\1isc_viewer \2/g' build.xml
+cp app/static/index_isc_viewer.html app/static/index.html
+ant static-war
+"
+    cp oq-ui-client/build/isc_viewer.war /var/lib/tomcat6/webapps/
+
     ##
     # GED4GEM_country 
     sudo su - $norm_user -c "
