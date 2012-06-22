@@ -506,6 +506,8 @@ ant static-war
     apache_append_proxy 'ProxyPassReverse /FaultedEarth http://localhost:8080/FaultedEarth'
     apache_append_proxy 'ProxyPass /geodetic http://localhost:8080/geodetic'
     apache_append_proxy 'ProxyPassReverse /geodetic http://localhost:8080/geodetic'
+    apache_append_proxy 'ProxyPass /isc_viewer http://localhost:8080/isc_viewer'
+    apache_append_proxy 'ProxyPassReverse /isc_viewer http://localhost:8080/isc_viewer'
     apache_append_proxy 'ProxyPass /GED4GEM_country http://localhost:8080/GED4GEM_country'
     apache_append_proxy 'ProxyPassReverse /GED4GEM_country http://localhost:8080/GED4GEM_country'
     apache_append_proxy 'ProxyPass /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
