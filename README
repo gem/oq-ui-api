@@ -10,18 +10,20 @@
 ==== Installation ====
 
   * open a terminal as normal user
-  * create a directory where download all repositories, for example: "geonode_staff".
-      $ mkdir geonode_staff
+  * create a directory where download all repositories, for example: "geonode_stuff".
+      $ mkdir geonode_stuff
+  [ if you have private data csv file for instrumental catalog then create a directory
+    named 'private_data' into your 'geonode_stuff' directory and copy it as 'isc_data.csv' file ]
   * clone the oq-ui-api repository and move into the new repository with commands:
       $ git clone git://github.com/gem/oq-ui-api.git
       $ cd oq-ui-api
   * checkout the required version of the script with the command
       $ git checkout <version_name>_inst
     where <version_name> is the version that you want to install
-  * copy the bin/geonode-installation.sh file into the previous created staff dir:
-      $ cp bin/geonode-installation.sh ../geonode_staff
-  * go into 'geonode_staff' directory and run the installation script:
-      $ cd ../geonode_staff
+  * copy the bin/geonode-installation.sh file into the previous created stuff dir:
+      $ cp bin/geonode-installation.sh ../geonode_stuff
+  * go into 'geonode_stuff' directory and run the installation script:
+      $ cd ../geonode_stuff
       $ ./geonode-installation.sh
     NOTE: to run some parts the script require root access so it will ask your
     password to 
