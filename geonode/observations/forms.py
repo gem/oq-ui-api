@@ -17,11 +17,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 from django import forms
-from geonode.observations.models import Observations, Fault, Trace
-
-class Observation(forms.ModelForm):
-    class Meta:
-        model = Observations
+from geonode.observations.models import Fault, Trace
 
 class Fault(forms.ModelForm):
     class Meta:
