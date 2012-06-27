@@ -14,10 +14,10 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v0.4.0
+export       GEM_OQ_UI_API_GIT_VERS=tom2apa-clients
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.4.0
+export    GEM_OQ_UI_CLIENT_GIT_VERS=tom2apa-clients
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
 export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.4.0
@@ -238,6 +238,8 @@ geonode_installation () {
     if [ $? -ne 0 ]; then
         sed -i 's@\(^WSGIDaemonProcess.*$\)@\1:/var/lib/geonode/src/GeoNodePy/geonode@g' /etc/apache2/sites-available/geonode
     fi
+    cat /etc/apache2/sites-enabled/geonode | grep -v '^[ 	]*Alias /oq-platform/ ' | \
+        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform/ /var/lib/openquake/oq-ui-client/oq-platform/@g' >/etc/apache2/sites-enabled/geonode
 
     # this fix the bug 972202 to inform jpype module where is the java installation
     sed -i "s@os.environ\['DJANGO_SETTINGS_MODULE'\] *= *'geonode.settings'@os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'\nos.environ['JAVA_HOME'] = '/usr/lib/jvm/java-6-openjdk'@g" "$GEM_WSGI_CONFIG"
@@ -419,7 +421,7 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     cd $norm_dir
 
     ##
-    echo "Add 'FaultedEarth', 'geodetic', 'isc_viewer', 'GED4GEM_country' and 'GED4GEM_Exposure' client applications"
+    echo "Add 'faultedearth', 'geodetic', 'isc_viewer', 'exposure_country' and 'exposure_grid' client applications"
     sudo su - $norm_user -c "
 cd \"$norm_dir\"
 test ! -d oq-ui-client || rm -Ir oq-ui-client
@@ -428,24 +430,28 @@ cd oq-ui-client
 git checkout $GEM_OQ_UI_CLIENT_GIT_VERS
 git submodule init
 git submodule update
-ant init
-ant debug -Dapp.port=8081 &
-debug_pid=\$!
-sleep 10
-kill -0 \$debug_pid
-if [ \$? -ne 0 ]; then
-    echo \"oq-ui-client checkpoint\"
-    echo \"ERROR: 'ant debug' failed\"
-    exit 4
-fi
-kill -TERM \$debug_pid
-exit 0
-"
+ant init"
+
+# ant debug -Dapp.port=8081 &
+# debug_pid=\$!
+# sleep 10
+# kill -0 \$debug_pid
+# if [ \$? -ne 0 ]; then
+#     echo \"oq-ui-client checkpoint\"
+#     echo \"ERROR: 'ant debug' failed\"
+#     exit 4
+# fi
+# kill -TERM \$debug_pid
+# exit 0
+# "
     ret=$?
     if [ $ret -ne 0 ]; then
         exit $ret
     fi
-    
+
+    cd oq-ui-client
+    ant deploy
+if [ 0 -eq 1 ]; then    
     ## 
     # FaultedEarth 
     sudo su - $norm_user -c "
@@ -500,6 +506,7 @@ ant static-war
 "
     cp oq-ui-client/build/GED4GEM_Exposure.war /var/lib/tomcat6/webapps/
 
+
     ##
     # configuration
     apache_append_proxy 'ProxyPass /FaultedEarth http://localhost:8080/FaultedEarth'
@@ -512,6 +519,7 @@ ant static-war
     apache_append_proxy 'ProxyPassReverse /GED4GEM_country http://localhost:8080/GED4GEM_country'
     apache_append_proxy 'ProxyPass /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
     apache_append_proxy 'ProxyPassReverse /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
+fi
 
     service tomcat6 restart
     service apache2 restart

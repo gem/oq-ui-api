@@ -19,7 +19,7 @@
     <div class="wrap selfclear">
       <!-- <a id="logo" href="{% url geonode.views.index %}">OpenQuake Platform</a> -->
       <a id="logo" href="{% url geonode.views.index %}">OpenQuake Platform</a>
-      <div id="login-area">
+      <div style="right: 150px; background-color: grey;" id="login-area">
         {% if user.is_authenticated %}
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
         {% else %}
@@ -52,7 +52,7 @@
    {% endif %}
     <div class="wrap selfclear">             
     {% block nav %}
-<div style="display: table-cell;">
+<div style="display: block; float: left;">
     {% if user.is_authenticated %}
        <ul id="submenu">
             <li>
@@ -63,10 +63,11 @@
                         <ul>
                             <li><a href="#" class="notyet">Earthquake history</a></li>
                             <li><a href="/isc_viewer/" target="gem_app_frame">Instrumental catalogue</a></li>
-                            <li><a href="/geodetic/" target="gem_app_frame">Geodetic strain rate</a></li>
+                            <li><a href="/oq-platform/geodetic_index.html" target="gem_app_frame">Geodetic strain rate</a></li>
                             <li><a href="#" class="notyet">Active faults</a></li>
                             <li><a href="#" class="notyet">Tectonic regionalisation</a></li>
-                            <li><a href="/GED4GEM_country/" target="gem_app_frame">Exposure</a></li>
+                            <li><a href="/oq-platform/exposure_country_index.html" target="gem_app_frame">Exposure Country Aggregate Data</a></li>
+			    <li><a href="/oq-platform/exposure_grid_index.html" target="gem_app_frame">Exposure Gridded Data</a></li>
                             <li><a href="#" class="notyet">Earthquake consequences</a></li>
                             <li><a href="#" class="notyet">Physical Vulnerability</a></li>
                             <li><a href="#" class="notyet">Vulnerability and resilience indicators </a></li>
