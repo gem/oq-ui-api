@@ -195,7 +195,7 @@ class FaultSection(models.Model):
     created = models.DateField(null=True, blank=True)
 
     #Displacement
-    slipType = models.CharField(max_length=30, null=True, blank=True)
+    sliptype = models.CharField(max_length=30, null=True, blank=True)
     hv_ratio = models.CharField(max_length=30, blank=True)
     rake = models.IntegerField(max_length=30, blank=True)
     net_slip_rate_min = models.FloatField(max_length=30, blank=True)
@@ -213,7 +213,7 @@ class FaultSection(models.Model):
     vertical_slip_rate_max = models.FloatField(max_length=30, blank=True)
     vertical_slip_rate_pref = models.FloatField(max_length=30, blank=True)
     site = models.CharField(max_length=30, blank=True)
-    notes = models.TextField(blank=True)
+    displacement_notes = models.TextField(blank=True)
 
 
 class Trace(models.Model):
