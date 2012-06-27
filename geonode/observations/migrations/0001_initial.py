@@ -269,7 +269,7 @@ class Migration(SchemaMigration):
             ('vertical_slip_rate_max', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
             ('vertical_slip_rate_pref', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
             ('site', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('displacement_notes', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('notes', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('summary_id', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
         ))
         db.send_create_signal('observations', ['Observations'])
