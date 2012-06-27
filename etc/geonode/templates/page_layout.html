@@ -8,8 +8,10 @@
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/boilerplate-min.css" media="screen" />
   <!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/oq-platform.css" media="screen" />
   <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
   <script type="text/javascript" src="{% url lang %}"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}theme/oq-platform.js"></script>
   {% endblock %}
 </head>
 <body>
@@ -50,6 +52,136 @@
    {% endif %}
     <div class="wrap selfclear">             
     {% block nav %}
+<div style="display: table-cell;">
+    {% if user.is_authenticated %}
+       <ul id="submenu">
+            <li>
+                <a href="#">EXPLORE</a>
+                <ul id="submenu">
+                    <li>
+			<a href="#">Basic Datasets</a>
+                        <ul>
+                            <li><a href="#" class="notyet">Earthquake history</a></li>
+                            <li><a href="/isc_viewer/" target="gem_app_frame">Instrumental catalogue</a></li>
+                            <li><a href="/geodetic/" target="gem_app_frame">Geodetic strain rate</a></li>
+                            <li><a href="#" class="notyet">Active faults</a></li>
+                            <li><a href="#" class="notyet">Tectonic regionalisation</a></li>
+                            <li><a href="/GED4GEM_country/" target="gem_app_frame">Exposure</a></li>
+                            <li><a href="#" class="notyet">Earthquake consequences</a></li>
+                            <li><a href="#" class="notyet">Physical Vulnerability</a></li>
+                            <li><a href="#" class="notyet">Vulnerability and resilience indicators </a></li>
+                        </ul>
+                     </li>
+                    <li>
+			<a href="#">Models</a>
+                        <ul>
+                            <li><a href="#" class="notyet">Hazard</a></li>
+                            <li><a href="#" class="notyet">Physical Risk</a></li>
+                            <li><a href="#" class="notyet">Integrated Risk</a></li>
+                        </ul>
+                     </li>
+                </ul>
+            </li>
+    
+            <li>
+                <a href="#">MODEL &nbsp;</a>
+                <ul>
+                    <li>
+                        <a href="#">Hazard</a>
+                        <ul>
+                            <li><a href="#" class="notyet">NRML parser</a></li>
+                            <li><a href="#" class="notyet">PSHA input model compiler </a></li>
+                        </ul>
+                    </li>
+    
+                    <li>
+                        <a href="#">Exposure</a>
+                        <ul>
+                            <li><a href="#" class="notyet">NRML parser</a></li>
+                            <li><a href="#" class="notyet">Exposure model compiler</a></li>
+                        </ul>
+                    </li>
+            
+                   <li>
+                        <a href="#">Physical Vulnerability</a>
+                        <ul>
+                            <li><a href="#" class="notyet">NRML parser</a></li>
+                            <li><a href="#" class="notyet">Empirical function compiler</a></li>
+                            <li><a href="#" class="notyet">(Analytical function compiler)</a></li>
+                        </ul>
+                    </li>
+            
+                   <li>
+                        <a href="#">Composite Indexes</a>
+                        <ul>
+                            <li><a href="#" class="notyet">NRML parser</a></li>
+                            <li><a href="#" class="notyet">Social vulnerability/indirect/<br>resilience index compiler</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+            <li>
+                <a href="#">CALCULATE</a>
+                <ul>
+                    <li>
+                        <a href="#">Hazard</a>
+                        <ul>
+                            <li><a href="#" class="notyet">Classical probabilistic hazard</a></li>
+                            <li><a href="#" class="notyet">Event-based probabilistic hazard</a></li>
+                            <li><a href="#" class="notyet">Scenario hazard</a></li>
+                            <li><a href="#" class="notyet">Ground motion fields</a></li>
+                            <li><a href="#" class="notyet">Stochastic event sets</a></li>
+                            <li><a href="#" class="notyet">Seismic hazard disaggregation</a></li>
+                        </ul>
+                    </li>
+    
+                    <li>
+                        <a href="#">Risk</a>
+                        <ul>
+                            <li><a href="#" class="notyet">Classical probabilistic hazard-based risk</a></li>
+                            <li><a href="#" class="notyet">Event-based probabilistic risk (ground up and insured loss)</a></li>
+                            <li><a href="#" class="notyet">Scenario risk (ground up and insured loss)</a></li>
+                            <li><a href="#" class="notyet">Scenario damage</a></li>
+                            <li><a href="#" class="notyet">Integrated risk</a></li>
+                            <li><a href="#" class="notyet">Loss disaggregation</a></li>
+                        </ul>
+                    </li>
+        
+    
+                    <li>
+                        <a href="#">Decision-Support</a>
+                        <ul>
+                            <li><a href="#" class="notyet">Retrofitting cost-benefit</a></li>
+                            <li><a href="#" class="notyet">Insurance cost-benefit</a></li>
+                            <li><a href="#" class="notyet">(Shelter provision)</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+            <li>
+                <a href="#">CAPTURE</a>
+                <ul>
+                    <li><a href="/FaultedEarth/" target="gem_app_frame">Active faults</a></li>
+                    <li><a href="#" class="notyet">Exposure</a></li>
+                    <li><a href="#" class="notyet">Consequences</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">DECIDE</a>
+                <ul>
+                    <li><a href="#" class="notyet">Retrofitting Prioritisation</a></li>
+                    <li><a href="#" class="notyet">Insurance cost-benefit</a></li>
+                    <li><a href="#" class="notyet">(Retrofitting cost-benefit)</a></li>
+                    <li><a href="#" class="notyet">(Shelter provision)</a></li>
+                </ul>
+            </li>
+            
+        </ul>
+    {% endif %}
+</div>
+<div style="display: table-cell; floating: right;">
     <ul id="sitenav" class="selfclear">
     {% if user.is_authenticated %}
 <!--
@@ -57,12 +189,13 @@
         <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
         <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
         <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
--->
+
         <li class=""><a class="" onclick="alert('qui');">{% trans "EXPLORE" %}</a></li>
         <li class=""><a class="" onclick="alert('qui');">{% trans "MODEL" %}</a></li>
         <li class=""><a class="" onclick="alert('qui');">{% trans "CALCULATE" %}</a></li>
         <li class=""><a class="" onclick="alert('qui');">{% trans "CAPTURE" %}</a></li>
         <li class=""><a class="" onclick="alert('qui');">{% trans "DECIDE" %}</a></li>
+-->
     {% if user.is_staff %}
         <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
     {% endif %}
@@ -70,6 +203,7 @@
     {% endif %}
 
     </ul>
+</div>
    {% endblock %}
 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: 0.3.0
+# Version: 0.4.1
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -13,14 +13,14 @@
 export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
-export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=site-obs
+export GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
+export GEM_OQ_UI_API_GIT_VERS=site-obs
 
-export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=site-observation-simple
+export GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
+export GEM_OQ_UI_CLIENT_GIT_VERS=site-observation-simple
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.3.1
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.4.1
 
 export GEM_DB_NAME="geonode_dev"
 
@@ -30,7 +30,8 @@ export GEM_DB_USER="geonode"
 export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
 export GEM_TMPDIR="gem_tmp"
-export GEM_BASEDIR="/var/lib/openquake"
+# GEM_BASEDIR ==REQUIRES== "/" at the end
+export GEM_BASEDIR="/var/lib/openquake/"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
@@ -263,10 +264,10 @@ geonode_installation () {
 cd $norm_dir
 git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
 "
-    mkreqdir -d "$GEM_BASEDIR"/django-schemata
+    mkreqdir -d "$GEM_BASEDIR"django-schemata
     cd django-schemata
-    git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"/django-schemata
-    ln -s "$GEM_BASEDIR"/django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
+    git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"django-schemata
+    ln -s "$GEM_BASEDIR"django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
     cd -
     apt-get install -y python-django-south
 
@@ -363,7 +364,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
     fi
 
     ###
-    echo "== Add 'geodetic' and 'observations' Django applications =="
+    echo "== Add 'geodetic', 'ged4gem', 'observations' and 'isc_viewer' Django applications =="
 
     sudo su - $norm_user -c "
 cd $norm_dir 
@@ -379,12 +380,14 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     schemata_config_add 'geodetic'      'geodetic'
     schemata_config_add 'django'        'public'
     schemata_config_add 'ged4gem'       'eqged'
+    schemata_config_add 'isc_viewer'    'isc_viewer'
 
     ##
     # /var/lib/geonode/src/GeoNodePy/geonode/settings.py    
     installed_apps_add 'geonode.ged4gem'
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
+    installed_apps_add 'geonode.isc_viewer'
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
@@ -401,6 +404,14 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     python ./manage.py syncdb
     export DJANGO_SCHEMATA_DOMAIN=geodetic
     python ./manage.py migrate geodetic
+    export DJANGO_SCHEMATA_DOMAIN=isc_viewer
+    python ./manage.py migrate isc_viewer
+    if [ -f "$norm_dir/private_data/isc_data.csv" ]; then
+        GEM_ISC_DATA="$norm_dir/private_data/isc_data.csv"
+    else
+        GEM_ISC_DATA="$norm_dir/oq-ui-api/data/isc_data.csv"
+    fi
+    python ./manage.py importcsv "$GEM_ISC_DATA"
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py migrate observations
     export DJANGO_SCHEMATA_DOMAIN=ged4gem
@@ -409,7 +420,7 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     cd $norm_dir
 
     ##
-    echo "Add 'FaultedEarth', 'geodetic', 'GED4GEM_country' and 'GED4GEM_Exposure' client applications"
+    echo "Add 'FaultedEarth', 'geodetic', 'isc_viewer', 'GED4GEM_country' and 'GED4GEM_Exposure' client applications"
     sudo su - $norm_user -c "
 cd \"$norm_dir\"
 test ! -d oq-ui-client || rm -Ir oq-ui-client
@@ -457,7 +468,17 @@ cp app/static/index_geodetic.html app/static/index.html
 ant static-war
 "
     cp oq-ui-client/build/geodetic.war /var/lib/tomcat6/webapps/
- 
+    ##
+    # isc_viewer
+    sudo su - $norm_user -c "
+cd \"$norm_dir\"
+cd oq-ui-client
+sed -i 's@\(<project name=\"\)[^\"]*\(\" \)@\1isc_viewer\2@g;s/^\( *\).*\(Build File.*\)$/\1isc_viewer \2/g' build.xml
+cp app/static/index_isc_viewer.html app/static/index.html
+ant static-war
+"
+    cp oq-ui-client/build/isc_viewer.war /var/lib/tomcat6/webapps/
+
     ##
     # GED4GEM_country 
     sudo su - $norm_user -c "
@@ -486,6 +507,8 @@ ant static-war
     apache_append_proxy 'ProxyPassReverse /FaultedEarth http://localhost:8080/FaultedEarth'
     apache_append_proxy 'ProxyPass /geodetic http://localhost:8080/geodetic'
     apache_append_proxy 'ProxyPassReverse /geodetic http://localhost:8080/geodetic'
+    apache_append_proxy 'ProxyPass /isc_viewer http://localhost:8080/isc_viewer'
+    apache_append_proxy 'ProxyPassReverse /isc_viewer http://localhost:8080/isc_viewer'
     apache_append_proxy 'ProxyPass /GED4GEM_country http://localhost:8080/GED4GEM_country'
     apache_append_proxy 'ProxyPassReverse /GED4GEM_country http://localhost:8080/GED4GEM_country'
     apache_append_proxy 'ProxyPass /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
@@ -506,14 +529,14 @@ git clone $GEM_OQ_UI_GEOSERVER_GIT_REPO
 cd oq-ui-geoserver
 git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 "
-    mkreqdir -d "$GEM_BASEDIR"/oq-ui-geoserver
+    mkreqdir -d "$GEM_BASEDIR"oq-ui-geoserver
     cd oq-ui-geoserver
     make deploy
     if [ -d /var/lib/tomcat6/webapps/geoserver -a ! -L /var/lib/tomcat6/webapps/geoserver ]; then
-        mv /var/lib/tomcat6/webapps/geoserver "$GEM_BASEDIR"/geoserver.orig
+        mv /var/lib/tomcat6/webapps/geoserver "$GEM_BASEDIR"geoserver.orig
     fi
 
-    ln -s "$GEM_BASEDIR"/oq-ui-geoserver/geoserver /var/lib/tomcat6/webapps/geoserver
+    ln -s "$GEM_BASEDIR"oq-ui-geoserver/geoserver /var/lib/tomcat6/webapps/geoserver
     cd -
 
     ##

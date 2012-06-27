@@ -148,8 +148,8 @@ margin: 0 auto;
 #header {
 /* background: #00a6d3 url(img/oq-header-bg.png) repeat-x; */
 background: #808080;
-border-top: 1px solid #7a7a7a;
-border-bottom: 2px solid #008cb3;
+/* border-top: 1px solid #7a7a7a;
+border-bottom: 2px solid #008cb3; */
 font-size: 1.2em;
 }
 
@@ -195,8 +195,9 @@ text-decoration: underline;
 }
 
 #crossbar {
-background: #003c4c;
-border-bottom: 2px solid #008cb3;
+/* background: #003c4c; */
+background: url("img/submenu_bg.png") repeat-x scroll 0 0 transparent;
+/* border-bottom: 2px solid #008cb3; */
 color: #fff;
 }
 
