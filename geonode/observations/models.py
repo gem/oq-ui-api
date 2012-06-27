@@ -194,6 +194,27 @@ class FaultSection(models.Model):
     contrib = models.CharField(max_length=30, null=True, blank=True)
     created = models.DateField(null=True, blank=True)
 
+    #Displacement
+    slipType = models.CharField(max_length=30, null=True, blank=True)
+    hv_ratio = models.CharField(max_length=30, blank=True)
+    rake = models.IntegerField(max_length=30, blank=True)
+    net_slip_rate_min = models.FloatField(max_length=30, blank=True)
+    net_slip_rate_max = models.FloatField(max_length=30, blank=True)
+    net_slip_rate_pref = models.FloatField(max_length=30, blank=True)
+    dip_slip_rate_min = models.FloatField(max_length=30, blank=True)
+    dip_slip_rate_max = models.FloatField(max_length=30, blank=True)
+    dip_slip_rate_pref = models.FloatField(max_length=30, blank=True)
+    marker_age = models.IntegerField(max_length=30, blank=True)
+    slip_rate_category = models.CharField(max_length=10, blank=True)
+    strike_slip_rate_min = models.FloatField(max_length=30, blank=True)
+    strike_slip_rate_max = models.FloatField(max_length=30, blank=True)
+    strike_slip_rate_pref = models.FloatField(max_length=30, blank=True)
+    vertical_slip_rate_min = models.FloatField(max_length=30, blank=True)
+    vertical_slip_rate_max = models.FloatField(max_length=30, blank=True)
+    vertical_slip_rate_pref = models.FloatField(max_length=30, blank=True)
+    site = models.CharField(max_length=30, blank=True)
+    notes = models.TextField(blank=True)
+
 
 class Trace(models.Model):
     fault_section = models.ManyToManyField('FaultSection')

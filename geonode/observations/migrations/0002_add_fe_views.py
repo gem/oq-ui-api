@@ -114,6 +114,63 @@ WHERE
     id = OLD.id;
 """)
 
+        # displacement view
+        db.execute("""CREATE VIEW gem.displacement_view AS
+SELECT
+    observations_faultsection.id, observations_faultsection.slipType,
+    observations_faultsection.hv_ratio, observations_faultsection.rake,
+    observations_faultsection.net_slip_rate_min, observations_faultsection.net_slip_rate_max,
+    observations_faultsection.net_slip_rate_pref, observations_faultsection.dip_slip_rate_min,
+    observations_faultsection.dip_slip_rate_max, observations_faultsection.dip_slip_rate_pref,
+    observations_faultsection.marker_age, observations_faultsection.slip_rate_category,
+    observations_faultsection.strike_slip_rate_min, observations_faultsection.strike_slip_rate_max,
+    observations_faultsection.strike_slip_rate_pref, observations_faultsection.vertical_slip_rate_min,
+    observations_faultsection.vertical_slip_rate_max, observations_faultsection.vertical_slip_rate_pref,
+    observations_faultsection.site, observations_faultsection.notes,
+GROUP BY
+    observations_faultsection.id, observations_faultsection.slipType,
+    observations_faultsection.hv_ratio, observations_faultsection.rake,
+    observations_faultsection.net_slip_rate_min, observations_faultsection.net_slip_rate_max,
+    observations_faultsection.net_slip_rate_pref, observations_faultsection.dip_slip_rate_min,
+    observations_faultsection.dip_slip_rate_max, observations_faultsection.dip_slip_rate_pref,
+    observations_faultsection.marker_age, observations_faultsection.slip_rate_category,
+    observations_faultsection.strike_slip_rate_min, observations_faultsection.strike_slip_rate_max,
+    observations_faultsection.strike_slip_rate_pref, observations_faultsection.vertical_slip_rate_min,
+    observations_faultsection.vertical_slip_rate_max, observations_faultsection.vertical_slip_rate_pref,
+    observations_faultsection.site, observations_faultsection.notes;
+""")
+
+        # displacement view update rule
+        db.execute("""
+CREATE RULE
+    displacement_view_update
+AS ON UPDATE TO
+    gem.displacement_view
+DO INSTEAD
+UPDATE
+    gem.observations_faultsection
+SET
+    slipType = NEW.slipType, hv_ratio = NEW.hv_ratio, rake = NEW.rake, 
+    net_slip_rate_min = NEW.net_slip_rate_min, 
+    net_slip_rate_max = NEW.net_slip_rate_max,
+    net_slip_rate_pref = NEW.net_slip_rate_pref,
+    dip_slip_rate_min = NEW.dip_slip_rate_min,
+    dip_slip_rate_max = NEW.dip_slip_rate_max,
+    dip_slip_rate_pref = NEW.dip_slip_rate_pref,
+    marker_age = NEW.marker_age,
+    slip_rate_category = NEW.slip_rate_category,
+    strike_slip_rate_min = NEW.strike_slip_rate_min,
+    strike_slip_rate_max = NEW.strike_slip_rate_max,
+    strike_slip_rate_pref = NEW.strike_slip_rate_pref,
+    vertical_slip_rate_min = NEW.vertical_slip_rate_min,
+    vertical_slip_rate_max = NEW.vertical_slip_rate_max,
+    vertical_slip_rate_pref = NEW.vertical_slip_rate_pref,
+    site = NEW.site,
+    notes = NEW.notes
+WHERE
+    id = OLD.id;
+""")
+
         # fault view
         db.execute("""CREATE VIEW gem.fault_view AS
                 SELECT observations_fault.id,
@@ -216,6 +273,9 @@ WHERE
                 'fault_section_view', 'geom', '2', 4326, 'MULTILINESTRING')""")
 
         db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
+                'displacement_view', 'geom', '2', 4326, 'MULTILINESTRING')""")
+
+        db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
         'fault_view', 'geom', 2, 4326, 'MULTILINESTRING')""")
 
         db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
@@ -225,6 +285,7 @@ WHERE
 
     def backwards(self, orm):
         db.execute("DROP VIEW fault_section_view")
+        db.execute("DROP VIEW displacement_view")
         db.execute("DROP VIEW fault_view")
         db.execute("DROP VIEW simple_geom_view")
 
@@ -321,7 +382,27 @@ WHERE
             'u_sm_d_com': ('django.db.models.fields.FloatField', [], {}),
             'u_sm_d_max': ('django.db.models.fields.FloatField', [], {}),
             'u_sm_d_min': ('django.db.models.fields.FloatField', [], {}),
-            'u_sm_d_pre': ('django.db.models.fields.FloatField', [], {})
+            'u_sm_d_pre': ('django.db.models.fields.FloatField', [], {}),
+            # displacement
+            'slipType': ('django.db.models.fields.CharField', [], {}),
+            'hv_ratio': ('django.db.models.fields.CharField', [], {}),
+            'rake': ('django.db.models.fields.IntegerField', [], {}),
+            'net_slip_rate_min': ('django.db.models.fields.FloatField', [], {}),
+            'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {}),
+            'net_slip_rate_pref': ('django.db.models.fields.FloatField', [], {}),
+            'dip_slip_rate_min': ('django.db.models.fields.FloatField', [], {}),
+            'dip_slip_rate_max': ('django.db.models.fields.FloatField', [], {}),
+            'dip_slip_rate_pref': ('django.db.models.fields.FloatField', [], {}),
+            'marker_age': ('django.db.models.fields.IntegerField', [], {}),
+            'slip_rate_category': ('django.db.models.fields.CharField', [], {}),
+            'strike_slip_rate_min': ('django.db.models.fields.FloatField', [], {}),
+            'strike_slip_rate_max': ('django.db.models.fields.FloatField', [], {}),
+            'strike_slip_rate_pref': ('django.db.models.fields.FloatField', [], {}),
+            'vertical_slip_rate_min': ('django.db.models.fields.FloatField', [], {}),
+            'vertical_slip_rate_max': ('django.db.models.fields.FloatField', [], {}),
+            'vertical_slip_rate_pref': ('django.db.models.fields.FloatField', [], {}),
+            'site': ('django.db.models.fields.CharField', [], {}),
+            'notes': ('django.db.models.fields.TextField', [], {})
         },
         'observations.faultsource': {
             'Meta': {'object_name': 'FaultSource'},

@@ -178,7 +178,27 @@ class Migration(SchemaMigration):
             ('compiler', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('contrib', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-        ))
+# Displacement
+            ('slipType', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('hv_ratio', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('rake', self.gf('django.db.models.fields.IntegerField')(max_length=30, null=True, blank=True)),
+            ('net_slip_rate_min', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('net_slip_rate_max', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('net_slip_rate_pref', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('dip_slip_rate_min', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('dip_slip_rate_max', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('dip_slip_rate_pref', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('marker_age', self.gf('django.db.models.fields.IntegerField')(max_length=30, null=True, blank=True)),
+            ('slip_rate_category', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('strike_slip_rate_min', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('strike_slip_rate_max', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('strike_slip_rate_pref', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('vertical_slip_rate_min', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('vertical_slip_rate_max', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('vertical_slip_rate_pref', self.gf('django.db.models.fields.FloatField')(max_length=30, null=True, blank=True)),
+            ('site', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('displacement_notes', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+        )),
         db.send_create_signal('observations', ['FaultSection'])
 
         # Adding M2M table for field fault on 'FaultSection'
