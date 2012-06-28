@@ -6,7 +6,7 @@
   * an internet connection
   * an IP address or a public FQDN that will be use to address the machine from
     the extern (we will call it <SITE_HOST>).
-  
+
 ==== Installation ====
 
   * open a terminal as normal user
@@ -14,6 +14,10 @@
       $ mkdir geonode_stuff
   [ if you have private data csv file for instrumental catalog then create a directory
     named 'private_data' into your 'geonode_stuff' directory and copy it as 'isc_data.csv' file ]
+  [ if you have a previous installation and you want migrate users to the new installation
+    you need to run on the previous installation as root:
+    $ sudo <oq-ui-api_repo>/bin/export-users.sh >users_data.json
+    and copy the 'users_data.json' file to your new machine into your 'geonode_stuff/private_data' directory. ]
   * clone the oq-ui-api repository and move into the new repository with commands:
       $ git clone git://github.com/gem/oq-ui-api.git
       $ cd oq-ui-api
