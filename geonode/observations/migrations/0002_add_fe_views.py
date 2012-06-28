@@ -195,24 +195,22 @@ WHERE
                  FROM gem.observations_fault f""")
 
         # "publish" the geometries into public.geometry_columns
-        try:
-            db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
+        db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
                 'fault_section_view', 'geom', '2', 4326, 'MULTILINESTRING')""")
-
-            db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
+        
+        db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
         'fault_view', 'geom', 2, 4326, 'MULTILINESTRING')""")
 
-            db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
+        db.execute("""INSERT INTO public.geometry_columns VALUES ('', 'gem',
                 'simple_geom_view', 'simple_geom', '2', 4326,
                 'MULTILINESTRING')""")
-        except:
-            pass
+
     
     def backwards(self, orm):
-        db.execute("DROP VIEW fault_section_view")
-        db.execute("DROP VIEW fault_view")
-        db.execute("DROP VIEW simple_geom_view")
-    
+        db.execute("DROP VIEW gem.fault_section_view")
+        db.execute("DROP VIEW gem.fault_view")
+        db.execute("DROP VIEW gem.simple_geom_view")
+        db.execute("delete from public.geometry_columns where f_table_schema='gem' and f_table_name in ('fault_section_view', 'fault_view', 'simple_geom_view')")
     
     models = {
         'observations.fault': {

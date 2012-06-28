@@ -36,7 +36,7 @@ $$ LANGUAGE plpgsql VOLATILE STRICT;
     
     
     def backwards(self, orm):
-        db.execute("DROP FUNCTION set_fault_simplegeom")
+        db.execute("DROP FUNCTION gem.set_fault_simplegeom(integer)")
     
     models = {
         'observations.fault': {
