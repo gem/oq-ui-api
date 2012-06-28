@@ -97,7 +97,7 @@ class FaultSource(models.Model):
     compiler = models.CharField(max_length=30, default='')
     contrib = models.CharField(max_length=30, default='')
 
-    geom = models.PolygonField(srid=4326, dim=3)
+    geom = models.PolygonField(srid=4326)
     created = models.DateField(null=True, blank=True)
 
 

@@ -151,7 +151,7 @@ class Migration(SchemaMigration):
             'dis_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'fault': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.Fault']"}),
             'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {'dim': '3'}),
+            'geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'length_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'length_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
