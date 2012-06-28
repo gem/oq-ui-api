@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: 0.4.0-isc_viewer (isc_viewer branch)
+# Version: >v0.4.0 - tom2apa-clients branch
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -406,7 +406,8 @@ git clone $GEM_OQ_UI_API_GIT_REPO"
     cd src/GeoNodePy/geonode/
     python ./manage.py manage_schemata
     export DJANGO_SCHEMATA_DOMAIN=django
-    python ./manage.py syncdb
+    # TODO: only to test it
+    python ./manage.py syncdb --noinput
     export DJANGO_SCHEMATA_DOMAIN=geodetic
     python ./manage.py migrate geodetic
     export DJANGO_SCHEMATA_DOMAIN=isc_viewer
@@ -524,6 +525,7 @@ ant static-war
     apache_append_proxy 'ProxyPass /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
     apache_append_proxy 'ProxyPassReverse /GED4GEM_Exposure http://localhost:8080/GED4GEM_Exposure'
 fi
+    cd "$norm_dir"
 
     service tomcat6 restart
     service apache2 restart
@@ -584,6 +586,8 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
+    export DJANGO_SCHEMATA_DOMAIN=django
+    python ./manage.py createsuperuser
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
 	python ./manage.py updatelayers

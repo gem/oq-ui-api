@@ -62,7 +62,7 @@
 			<a href="#">Basic Datasets</a>
                         <ul>
                             <li><a href="#" class="notyet">Earthquake history</a></li>
-                            <li><a href="/isc_viewer/" target="gem_app_frame">Instrumental catalogue</a></li>
+                            <li><a href="/oq-platform/isc_viewer_index.html" target="gem_app_frame">Instrumental catalogue</a></li>
                             <li><a href="/oq-platform/geodetic_index.html" target="gem_app_frame">Geodetic strain rate</a></li>
                             <li><a href="#" class="notyet">Active faults</a></li>
                             <li><a href="#" class="notyet">Tectonic regionalisation</a></li>
@@ -164,7 +164,7 @@
             <li>
                 <a href="#">CAPTURE</a>
                 <ul>
-                    <li><a href="/FaultedEarth/" target="gem_app_frame">Active faults</a></li>
+                    <li><a href="/oq-platform/faultedearth_index.html" target="gem_app_frame">Active faults</a></li>
                     <li><a href="#" class="notyet">Exposure</a></li>
                     <li><a href="#" class="notyet">Consequences</a></li>
                 </ul>
@@ -185,18 +185,6 @@
 <div style="display: table-cell; floating: right;">
     <ul id="sitenav" class="selfclear">
     {% if user.is_authenticated %}
-<!--
-        <li class="home"><a href="{% url geonode.views.index %}">{% trans "Home" %}</a></li> 
-        <li class=""><a class="" id="dataLink" href="{% url geonode.maps.views.browse_data %}">{% trans "Data" %}</a></li>
-        <li class=""><a class="" id="mapsLink" href="{% url geonode.maps.views.maps %}">{% trans "Maps" %}</a></li>
-        <li class=""><a class="" id="profileLink" href="{% url profiles_profile_detail user.username %}">{% trans "Profile" %}</a></li>
-
-        <li class=""><a class="" onclick="alert('qui');">{% trans "EXPLORE" %}</a></li>
-        <li class=""><a class="" onclick="alert('qui');">{% trans "MODEL" %}</a></li>
-        <li class=""><a class="" onclick="alert('qui');">{% trans "CALCULATE" %}</a></li>
-        <li class=""><a class="" onclick="alert('qui');">{% trans "CAPTURE" %}</a></li>
-        <li class=""><a class="" onclick="alert('qui');">{% trans "DECIDE" %}</a></li>
--->
     {% if user.is_staff %}
         <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
     {% endif %}
