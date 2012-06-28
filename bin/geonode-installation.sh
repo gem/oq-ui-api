@@ -30,7 +30,8 @@ export GEM_DB_USER="geonode"
 export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
 export GEM_TMPDIR="gem_tmp"
-export GEM_BASEDIR="/var/lib/openquake"
+# GEM_BASEDIR ==REQUIRES== "/" at the end
+export GEM_BASEDIR="/var/lib/openquake/"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
@@ -263,10 +264,10 @@ geonode_installation () {
 cd $norm_dir
 git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
 "
-    mkreqdir -d "$GEM_BASEDIR"/django-schemata
+    mkreqdir -d "$GEM_BASEDIR"django-schemata
     cd django-schemata
-    git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"/django-schemata
-    ln -s "$GEM_BASEDIR"/django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
+    git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"django-schemata
+    ln -s "$GEM_BASEDIR"django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
     cd -
     apt-get install -y python-django-south
 
@@ -528,14 +529,14 @@ git clone $GEM_OQ_UI_GEOSERVER_GIT_REPO
 cd oq-ui-geoserver
 git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
 "
-    mkreqdir -d "$GEM_BASEDIR"/oq-ui-geoserver
+    mkreqdir -d "$GEM_BASEDIR"oq-ui-geoserver
     cd oq-ui-geoserver
     make deploy
     if [ -d /var/lib/tomcat6/webapps/geoserver -a ! -L /var/lib/tomcat6/webapps/geoserver ]; then
-        mv /var/lib/tomcat6/webapps/geoserver "$GEM_BASEDIR"/geoserver.orig
+        mv /var/lib/tomcat6/webapps/geoserver "$GEM_BASEDIR"geoserver.orig
     fi
 
-    ln -s "$GEM_BASEDIR"/oq-ui-geoserver/geoserver /var/lib/tomcat6/webapps/geoserver
+    ln -s "$GEM_BASEDIR"oq-ui-geoserver/geoserver /var/lib/tomcat6/webapps/geoserver
     cd -
 
     ##
