@@ -211,3 +211,137 @@ class SiteObservation(models.Model):
     accuracy = models.BigIntegerField()
     s_feature = models.CharField(max_length=30)
     notes = models.TextField()
+
+    class Meta:
+        abstract = True
+
+class Event(SiteObservation):
+    AGE_OF_LAST_MOVEMENT_CATEGORY_CHOICES = (('0 - <1,000', '0 - <1,000'),
+                                             ('1,000 - <11,700 (Holocene)', '1,000 - <11,700 (Holocene)'),
+                                             ('11,700 - <50,000', '11,700 - <50,000'),
+                                             ('100,000 - <1,000,000', '100,000 - <1,000,000'),
+                                             ('1,000,000 - <10,000,000', '1,000,000 - <10,000,000'))
+
+    RECURRENCE_INTERVAL_CATEGORY_CHOICES = (('10 - <100', '10 - <100'),
+                                            ('100 - <1,000', '100 - <1,000'),
+                                            ('1,000 - <2,000', '1,000 - <2,000'),
+                                            ('2,000 - <5,000', '2,000 - <5,000'),
+                                            ('5,000 - <10,000', '5,000 - <10,000'),
+                                            ('10,000 - <100,000', '10,000 - <100,000'),
+                                            ('100,000 - <500,000', '100,000 - <500,000'),
+                                            ('500,000 - <1,000,000', '500,000 - <1,000,000'),
+                                            ('1,000,000 - <10,000,000', '1,000,000 - <10,000,000'), )
+    mov_category = models.CharField(max_length=255,
+                                    verbose_name="Age of last movement category",
+                                    choices=AGE_OF_LAST_MOVEMENT_CATEGORY_CHOICES,
+                                    blank=True, null=True)
+    mov_min = models.IntegerField(blank=True, null=True)
+    mov_max = models.IntegerField(blank=True, null=True)
+    mov_pref = models.IntegerField(blank=True, null=True)
+
+    historical_earthquake = models.IntegerField(blank=True, null=True)
+    pre_historical_earthquake = models.IntegerField(blank=True, null=True)
+    marker_age = models.IntegerField(blank=True, null=True)
+
+    re_int_min = models.IntegerField(blank=True, null=True, verbose_name="Recurrence interval min (yr)")
+    re_int_max = models.IntegerField(blank=True, null=True, verbose_name="Recurrence interval min (yr)")
+    re_int_pref = models.IntegerField(blank=True, null=True, verbose_name="Recurrence interval min (yr)")
+    re_int_category = models.CharField(max_length=255,
+                                       choices=RECURRENCE_INTERVAL_CATEGORY_CHOICES,
+                                       blank=True,
+                                       null=True)
+    
+class FaultGeometry(SiteObservation):
+    DOWNTHROWN_SIDE_CHOICES = (('N', 'N'),
+                               ('S', 'S'),
+                               ('W', 'W'),
+                               ('E', 'E'),
+                               ('NE', 'NE'),
+                               ('NW', 'NW'),
+                               ('SE', 'SE'),
+                               ('SW', 'SW'))
+
+    dip_dir = models.IntegerField(null=True, blank=True, verbose_name="Dip Direction")
+
+    down_thro = models.CharField(max_length=255,
+                                 verbose_name="Downthrown side",
+                                 choices=DOWNTHROWN_SIDE_CHOICES,
+                                 blank=True, null=True)
+
+    strike = models.IntegerField(null=True, blank=True)
+    surface_dip = models.FloatField(null=True, blank=True)
+
+class Displacement(SiteObservation):
+    DISPLACEMENT_CATEGORY_CHOICES = (('0.1 - <0.5', '0.1 - <0.5'),
+                                     ('0.5 - <1', '0.5 - <1'),
+                                     ('1 - <5', '1 - <5'),
+                                     ('5 - <10', '5 - <10'),
+                                     ('10 - <30', '10 - <30'))
+
+    dis_min = models.FloatField(null=True, blank=True, verbose_name="Dip displacement minimum")
+    dis_max = models.FloatField(null=True, blank=True, verbose_name="Dip displacement maximum")
+    dis_pref = models.FloatField(null=True, blank=True, verbose_name="Dip displacement preferred")
+
+    dis_total = models.FloatField(null=True, blank=True, verbose_name="Total displacement")
+
+    dis_category = models.CharField(max_length=255,
+                                    verbose_name="Displacement Category",
+                                    choices=DISPLACEMENT_CATEGORY_CHOICES,
+                                    blank=True, null=True)
+
+    horizontal_displacement = models.FloatField(blank=True, null=True)
+    vertical_displacement = models.FloatField(blank=True, null=True)
+    net_displacement = models.FloatField(blank=True, null=True)
+
+class SlipRate(SiteObservation):
+    SLIP_RATE_CATEGORY_CHOICES = ( ('0.001 - <0.01', '0.001 - <0.01'),
+                                   ('0.01 - <0.1', '0.01 - <0.1'),
+                                   ('0.1 - <1', '0.1 - <1'),
+                                   ('0.1 - <1', '0.1 - <1'),
+                                   ('1 - <5', '1 - <5'),
+                                   ('5 - <10', '5 - <10'),
+                                   ('10 - <50', '10 - <50'),
+                                   ('50 - <100', '50 - <100'),
+                                   ('100 - <200', '100 - <200'))
+
+    SLIP_TYPE_CHOICES = ( ('Reverse', 'Reverse'),
+                          ('Thrust (dip <45 deg)', 'Thrust (dip <45 deg)'),
+                          ('Normal', 'Normal'),
+                          ('Dextral', 'Dextral'),
+                          ('Sinistral', 'Sinistral'),
+
+                          ('Normal Dextral', 'Normal Dextral'),
+                          ('Dextral Normal', 'Dextral Normal'),
+                          ('Sinistral Normal', 'Sinistral Normal'),
+                          ('Normal Sinistral', 'Normal Sinisrtal'),
+                          ('Dextral Reverse', 'Dextral Reverse'),
+                          ('Sinistral Reverse', 'Sinistral Reverse'),
+                          )
+    dip_slip_rate_min = models.FloatField(null=True, blank=True, verbose_name="Dip Slip Rate Min")
+    dip_slip_rate_pref = models.FloatField(null=True, blank=True, verbose_name="Dip Slip Rate Max")
+    dip_slip_rate_max = models.FloatField(null=True, blank=True, verbose_name="Dip Slip Rate Pref")
+
+    strike_slip_rate_min = models.FloatField(null=True, blank=True)
+    strike_slip_rate_max = models.FloatField(null=True, blank=True)
+    strike_slip_rate_pref = models.FloatField(null=True, blank=True)
+    vertical_slip_rate_min = models.FloatField(null=True, blank=True)
+    vertical_slip_rate_max = models.FloatField(null=True, blank=True)
+    vertical_slip_rate_pref = models.FloatField(null=True, blank=True)
+
+    hv_ratio = models.FloatField(null=True, blank=True)
+
+    net_slip_rate_min = models.FloatField(blank=True, null=True)
+    net_slip_rate_max = models.FloatField(blank=True, null=True)
+    net_slip_rate_pref = models.FloatField(blank=True, null=True)
+
+    rake = models.FloatField(blank=True, null=True)
+
+    slip_rate_category = models.CharField(max_length=255,
+                                          choices=SLIP_RATE_CATEGORY_CHOICES,
+                                          blank=True,
+                                          null=True)
+
+    slip_type = models.CharField(max_length=255,
+                                 choices=SLIP_TYPE_CHOICES,
+                                 blank=True,
+                                 null=True)
