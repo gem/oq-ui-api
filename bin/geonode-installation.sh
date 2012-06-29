@@ -20,7 +20,7 @@ export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=tom2apa-clients
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.4.0
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.4.1
 
 export GEM_DB_NAME="geonode_dev"
 
@@ -31,7 +31,7 @@ export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
 export GEM_TMPDIR="gem_tmp"
 # GEM_BASEDIR ==REQUIRES== "/" at the end
-export GEM_BASEDIR="/var/lib/openquake/" 
+export GEM_BASEDIR="/var/lib/openquake/"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
