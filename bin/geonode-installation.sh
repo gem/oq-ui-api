@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v0.6.0
+# Version: v1.0.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -13,14 +13,16 @@
 export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
-export GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export GEM_OQ_UI_API_GIT_VERS=v0.7.0
-export GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export GEM_OQ_UI_CLIENT_GIT_VERS=v0.7.0
-export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.7.0
+export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
+export       GEM_OQ_UI_API_GIT_VERS=v1.0.0
 
-export GEM_DB_NAME="geonode_dev"
+export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
+export    GEM_OQ_UI_CLIENT_GIT_VERS=v1.0.0
+
+export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=v1.0.0
+
+export GEM_DB_NAME="geonode"
 
 #
 # PRIVATE GLOBAL VARS
@@ -153,7 +155,8 @@ check_distro () {
     rel="$(lsb_release -r  | sed 's/^Release:[ 	]*//g')" 
     if [ "$distro" != "Ubuntu" ]; then
         return 2
-    elif [ "$rel" != "10.10" -a "$rel" != "11.04" ]; then
+        #  "$rel" != "10.10" -a "$rel" != "11.04" -a 
+    elif [ "$rel" != "12.04" ]; then
         return 1
     fi
     return 0
@@ -185,7 +188,7 @@ geonode_installation () {
     ret=$?
     distdesc=" $(lsb_release  -d | sed 's/Description:[ 	]*//g')" 
     if [ $ret -eq 1 ]; then
-        echo "WARNING: this script is designed to run on Ubuntu 10.10 and 11.04, not on ${distdesc}."
+        echo "WARNING: this script is designed to run on Ubuntu 12.04, not on ${distdesc}."
         read -p "press ENTER to continue AT YOUR OWN RISK or CTRL+C to abort." a
     elif [ $ret -eq 2 ]; then
         echo "ERROR: ${distdesc} not supported" 
@@ -208,8 +211,8 @@ geonode_installation () {
     ###
     echo "== General requirements ==" 
     apt-get install -y python-software-properties
-    add-apt-repository ppa:geonode/release
-    apt-add-repository ppa:openquake/ppa
+    add-apt-repository -y ppa:geonode/testing
+    apt-add-repository -y ppa:openquake/ppa
     apt-get update
 
     apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java
@@ -235,9 +238,7 @@ geonode_installation () {
 #        echo "installation ABORTED"
 #        exit 1
 #    fi  
-    gem_oldpath="$PATH"
-    export PATH=/usr/lib/python-django/bin:$PATH
-    export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
+#
     apt-get install -y geonode
     
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
@@ -280,7 +281,6 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
     git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"django-schemata
     ln -s "$GEM_BASEDIR"django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
     cd -
-    apt-get install -y python-django-south
 
     ###
     echo "== Django-South configuration =="
@@ -332,16 +332,16 @@ SOUTH_DATABASE_ADAPTERS = {
     service apache2 stop 
     service tomcat6 stop
 
-    sudo su - postgres -c "
-dropdb $GEM_DB_NAME || true
-createdb -O $GEM_DB_USER $GEM_DB_NAME 
-createlang plpgsql $GEM_DB_NAME 
-psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME 
-psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME 
-"
+#    sudo su - postgres -c "
+#dropdb $GEM_DB_NAME || true
+#createdb -O $GEM_DB_USER $GEM_DB_NAME
+#createlang plpgsql $GEM_DB_NAME
+#psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME
+#psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
+#"
     
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
-    sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1geonode_dev@g" "$GEM_NW_SETTINGS"
+    sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
 
     service apache2 start
     service tomcat6 start
@@ -380,9 +380,10 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
     sudo su - $norm_user -c "
 cd $norm_dir 
 test ! -d oq-ui-api || rm -Ir oq-ui-api 
-git clone $GEM_OQ_UI_API_GIT_REPO"
+git clone $GEM_OQ_UI_API_GIT_REPO
+cd oq-ui-api
+git checkout $GEM_OQ_UI_API_GIT_VERS"
     cd oq-ui-api
-    git checkout $GEM_OQ_UI_API_GIT_VERS
     make fix
     make MKREQDIR_ARG="-d" deploy
      
@@ -517,8 +518,6 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     #  NOTE: for some unknown reasons the last step fails the first time that we run.
     #        To not waste time to investigate this strage problem we use a "retry approach".
     #
-    unset VIRTUALENV_SYSTEM_SITE_PACKAGES
-    export PATH="$gem_oldpath"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/

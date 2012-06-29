@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
         # Adding model 'FaultSource'
         db.create_table('observations_faultsource', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')()),
+            ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(dim=3)),
             ('fault', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.Fault'])),
             ('source_nm', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('fault_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
