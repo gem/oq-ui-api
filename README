@@ -50,6 +50,9 @@ We provide a simple script to perform this task (and return to http, if required
   * an ssl key named 'oq-platform.key' into the just created folder
   * an ssl certificate named 'oq-platform.crt' into the just created folder
 
+To create .key and .crt files you can follow instructions here:
+http://docs.geonode.org/en/latest/deploy/ssl.html#generate-ssl-key-certificate
+
 === Howto ===
 
   * cd into the parent directory of 'private-data'
