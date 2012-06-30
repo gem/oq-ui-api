@@ -81,6 +81,7 @@ for cfg in "$GEM_GN_LOCSET" "$GEM_APACHE_CONF" "$GEM_TOMCAT_CONF" "$GEM_GEOSERVE
     fi
 done
 
+apt-get install xmlstarlet
 export SITEHOST="$(grep '^SITEURL' "$GEM_GN_LOCSET" | sed 's@.*https\?://@@g;s@/.*@@g')"
 if [ ! $SITEHOST ]; then
     echo "SITEHOST not identified"
