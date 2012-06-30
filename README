@@ -38,4 +38,25 @@
   **NOTE** the script will takes few tens of minutes to finish, if you continuously see
   new lines of log on the display you can fill safe.
 
+==== Enhance security with HTTPS protocol ====
 
+After the installation you can increase your security using https instead of http protocol.
+
+We provide a simple script to perform this task (and return to http, if required).
+
+=== Requirements ===
+
+  * a folder named 'private-data'
+  * an ssl key named 'oq-platform.key' into the just created folder
+  * an ssl certificate named 'oq-platform.crt' into the just created folder
+
+=== Howto ===
+
+  * cd into the parent directory of 'private-data'
+  * run sudo <oq-ui-api directory>/bin/oq-platform2https.sh http2https
+
+=== Revert ===
+
+To return to the previous http protocol:
+
+  * run sudo <oq-ui-api directory>/bin/oq-platform2https.sh revert
