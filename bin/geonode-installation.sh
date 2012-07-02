@@ -511,14 +511,19 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     #  NOTE: for some unknown reasons the last step fails the first time that we run.
     #        To not waste time to investigate this strage problem we use a "retry approach".
     #
-
     unset VIRTUALENV_SYSTEM_SITE_PACKAGES
     export PATH="$gem_oldpath"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
     export DJANGO_SCHEMATA_DOMAIN=django
-    python ./manage.py createsuperuser
+    if [ -f "$norm_dir/private_data/users_data.json" ]; then
+        # this json data below are generated in the previous installation with
+        # "python ./manage.py dumpdata --format=json auth >users_data.json"
+        python ./manage.py loaddata "$norm_dir/private_data/users_data.json"
+    else
+        python ./manage.py createsuperuser
+    fi
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
 	python ./manage.py updatelayers
