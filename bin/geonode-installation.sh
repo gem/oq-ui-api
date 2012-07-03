@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v0.5.0
+# Version: v0.5.0 - users-mgmt branch
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -14,7 +14,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v0.5.0
+export       GEM_OQ_UI_API_GIT_VERS=users-mgmt
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.5.0
