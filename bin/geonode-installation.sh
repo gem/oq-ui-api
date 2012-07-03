@@ -49,16 +49,24 @@ usage () {
     
     name="$1"
     err="$2"
-    echo "Usage:"
-    echo "  $name"
-    echo "  Run the command from your normal user account"
-    echo
-    echo "  $name <-s|--setgit>"
-    echo "  Set current git repo and commit into oq_ui_api script variables"
-    echo
-    echo "  $name <-h|--help>"
-    echo "  This help"
-    echo 
+cat <<EOF
+Usage:
+  $name
+  Run the command from your normal user account
+
+  $name <-s|--setgit>
+  Set current git repo and commit into oq_ui_api script variables
+
+  $name <-h|--help>
+  This help
+
+To export users data from a previous installation you can run on it:
+  sudo <oq-ui-api>/bin/export-users.sh >users_data.json
+
+To import users data into the new installation you can copy previous
+  created users_data.json file into 'private_data' dire of your working dir.
+
+EOF
     exit $err
 }
 

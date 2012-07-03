@@ -16,12 +16,7 @@
     named 'private_data' into your 'geonode_stuff' directory and copy it as 'isc_data.csv' file ]
   [ if you have a previous installation and you want migrate users to the new installation
     you need to run on the previous installation as root:
-    # cd /var/lib/geonode/
-    # source bin/activate
-    # cd src/GeoNodePy/geonode/
-    # export DJANGO_SCHEMATA_DOMAIN=django
-    # python ./manage.py dumpdata --format=json auth >users_data.json
-
+    $ sudo <oq-ui-api_repo>/bin/export-users.sh >users_data.json
     and copy the 'users_data.json' file to your new machine into your 'geonode_stuff/private_data' directory. ]
   * clone the oq-ui-api repository and move into the new repository with commands:
       $ git clone git://github.com/gem/oq-ui-api.git
