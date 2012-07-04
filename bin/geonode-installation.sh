@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v0.5.0
+# Version: v0.6.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -14,13 +14,13 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v0.5.0
+export       GEM_OQ_UI_API_GIT_VERS=v0.6.0
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.5.0
+export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.6.0
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.5.0
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.6.0
 
 export GEM_DB_NAME="geonode_dev"
 
@@ -49,16 +49,24 @@ usage () {
     
     name="$1"
     err="$2"
-    echo "Usage:"
-    echo "  $name"
-    echo "  Run the command from your normal user account"
-    echo
-    echo "  $name <-s|--setgit>"
-    echo "  Set current git repo and commit into oq_ui_api script variables"
-    echo
-    echo "  $name <-h|--help>"
-    echo "  This help"
-    echo 
+cat <<EOF
+Usage:
+  $name
+  Run the command from your normal user account
+
+  $name <-s|--setgit>
+  Set current git repo and commit into oq_ui_api script variables
+
+  $name <-h|--help>
+  This help
+
+To export users data from a previous installation you can run on it:
+  sudo <oq-ui-api>/bin/export-users.sh >users_data.json
+
+To import users data into the new installation you can copy previous
+  created users_data.json file into 'private_data' dire of your working dir.
+
+EOF
     exit $err
 }
 
@@ -511,14 +519,19 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     #  NOTE: for some unknown reasons the last step fails the first time that we run.
     #        To not waste time to investigate this strage problem we use a "retry approach".
     #
-
     unset VIRTUALENV_SYSTEM_SITE_PACKAGES
     export PATH="$gem_oldpath"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
     export DJANGO_SCHEMATA_DOMAIN=django
-    python ./manage.py createsuperuser
+    if [ -f "$norm_dir/private_data/users_data.json" ]; then
+        # this json data below are generated in the previous installation with
+        # "python ./manage.py dumpdata --format=json auth >users_data.json"
+        python ./manage.py loaddata "$norm_dir/private_data/users_data.json"
+    else
+        python ./manage.py createsuperuser
+    fi
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
 	python ./manage.py updatelayers
