@@ -9,7 +9,7 @@
 
 cat <<EOF | patch -p0
 --- null	2012-06-12 09:55:53.000000000 +0200
-+++ /var/lib/geonode/local/lib/python2.7/site-packages/staticfiles/management/commands/collectstatic.py	2012-06-11 17:45:39.734231912 +0200
++++ /var/lib/geonode/lib/python2.7/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py 2012-06-11 17:45:39.734231912 +0200
 @@ -180,7 +180,7 @@
                                     ', %s post-processed'
                                     % post_processed_count or ''),

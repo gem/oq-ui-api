@@ -14,7 +14,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v0.6.0
+export       GEM_OQ_UI_API_GIT_VERS=precise
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.6.0
@@ -22,7 +22,7 @@ export    GEM_OQ_UI_CLIENT_GIT_VERS=v0.6.0
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
 export GEM_OQ_UI_GEOSERVER_GIT_VERS=v0.6.0
 
-export GEM_DB_NAME="geonode_dev"
+export GEM_DB_NAME="geonode"
 
 #
 # PRIVATE GLOBAL VARS
@@ -210,8 +210,8 @@ geonode_installation () {
     ###
     echo "== General requirements ==" 
     apt-get install -y python-software-properties
-    add-apt-repository ppa:geonode/release
-    apt-add-repository ppa:openquake/ppa
+    add-apt-repository -y ppa:geonode/testing
+    apt-add-repository -y ppa:openquake/ppa
     apt-get update
 
     apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java
@@ -237,9 +237,9 @@ geonode_installation () {
 #        echo "installation ABORTED"
 #        exit 1
 #    fi  
-    gem_oldpath="$PATH"
-    export PATH=/usr/lib/python-django/bin:$PATH
-    export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
+    #mop! gem_oldpath="$PATH"
+    #mop! export PATH=/usr/lib/python-django/bin:$PATH
+    #mop! export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
     apt-get install -y geonode
     
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
@@ -282,7 +282,7 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
     git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"django-schemata
     ln -s "$GEM_BASEDIR"django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
     cd -
-    apt-get install -y python-django-south
+    #mop apt-get install -y python-django-south
 
     ###
     echo "== Django-South configuration =="
@@ -334,16 +334,16 @@ SOUTH_DATABASE_ADAPTERS = {
     service apache2 stop 
     service tomcat6 stop
 
-    sudo su - postgres -c "
-dropdb $GEM_DB_NAME || true
-createdb -O $GEM_DB_USER $GEM_DB_NAME 
-createlang plpgsql $GEM_DB_NAME 
-psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME 
-psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME 
-"
+#    sudo su - postgres -c "
+#dropdb $GEM_DB_NAME || true
+#createdb -O $GEM_DB_USER $GEM_DB_NAME 
+#createlang plpgsql $GEM_DB_NAME 
+#psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME 
+#psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME 
+#"
     
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
-    sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1geonode_dev@g" "$GEM_NW_SETTINGS"
+    sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
 
     service apache2 start
     service tomcat6 start
@@ -382,9 +382,10 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
     sudo su - $norm_user -c "
 cd $norm_dir 
 test ! -d oq-ui-api || rm -Ir oq-ui-api 
-git clone $GEM_OQ_UI_API_GIT_REPO"
+git clone $GEM_OQ_UI_API_GIT_REPO
+cd oq-ui-api
+git checkout $GEM_OQ_UI_API_GIT_VERS"
     cd oq-ui-api
-    git checkout $GEM_OQ_UI_API_GIT_VERS
     make fix
     make MKREQDIR_ARG="-d" deploy
      
@@ -529,8 +530,8 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         # this json data below are generated in the previous installation with
         # "python ./manage.py dumpdata --format=json auth >users_data.json"
         python ./manage.py loaddata "$norm_dir/private_data/users_data.json"
-    else
-        python ./manage.py createsuperuser
+    #else
+    #    python ./manage.py createsuperuser
     fi
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
