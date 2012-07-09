@@ -237,9 +237,7 @@ geonode_installation () {
 #        echo "installation ABORTED"
 #        exit 1
 #    fi  
-    #mop! gem_oldpath="$PATH"
-    #mop! export PATH=/usr/lib/python-django/bin:$PATH
-    #mop! export VIRTUALENV_SYSTEM_SITE_PACKAGES=true
+#
     apt-get install -y geonode
     
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
@@ -282,7 +280,6 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
     git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"django-schemata
     ln -s "$GEM_BASEDIR"django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
     cd -
-    #mop apt-get install -y python-django-south
 
     ###
     echo "== Django-South configuration =="
@@ -336,10 +333,10 @@ SOUTH_DATABASE_ADAPTERS = {
 
 #    sudo su - postgres -c "
 #dropdb $GEM_DB_NAME || true
-#createdb -O $GEM_DB_USER $GEM_DB_NAME 
-#createlang plpgsql $GEM_DB_NAME 
-#psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME 
-#psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME 
+#createdb -O $GEM_DB_USER $GEM_DB_NAME
+#createlang plpgsql $GEM_DB_NAME
+#psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME
+#psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
 #"
     
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
@@ -520,8 +517,6 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
     #  NOTE: for some unknown reasons the last step fails the first time that we run.
     #        To not waste time to investigate this strage problem we use a "retry approach".
     #
-    unset VIRTUALENV_SYSTEM_SITE_PACKAGES
-    export PATH="$gem_oldpath"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
@@ -530,8 +525,8 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         # this json data below are generated in the previous installation with
         # "python ./manage.py dumpdata --format=json auth >users_data.json"
         python ./manage.py loaddata "$norm_dir/private_data/users_data.json"
-    #else
-    #    python ./manage.py createsuperuser
+    else
+        python ./manage.py createsuperuser
     fi
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
