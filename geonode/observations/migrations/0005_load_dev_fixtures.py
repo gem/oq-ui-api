@@ -1,36 +1,18 @@
 # encoding: utf-8
-
-# Copyright (c) 2010-2012, GEM Foundation.
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
-
 import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
 class Migration(DataMigration):
-
+    
     def forwards(self, orm):
         from django.core.management import call_command
-        call_command("loaddata", "fe_fixtures.json")
-
-
+        call_command("loaddata", "observations/fixtures/faulted_earth_dev.json")
+    
     def backwards(self, orm):
-        "Write your backwards methods here."
-
-
+        pass
+    
     models = {
         'observations.fault': {
             'Meta': {'object_name': 'Fault'},
@@ -146,6 +128,7 @@ class Migration(DataMigration):
             'dis_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dis_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'fault': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.Fault']"}),
+            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'length_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -173,7 +156,7 @@ class Migration(DataMigration):
             'slip_r_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'slip_r_pre': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'slip_typ': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'}),
-            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'source_nm': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'u_sm_d_com': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'u_sm_d_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'u_sm_d_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -182,35 +165,10 @@ class Migration(DataMigration):
             'width_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'width_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         },
-        'observations.observations': {
-            'Meta': {'object_name': 'Observations'},
-            'dip_slip_rate_max': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'dip_slip_rate_min': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'dip_slip_rate_pref': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'hv_ratio': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'marker_age': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'net_slip_rate_max': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'net_slip_rate_min': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'net_slip_rate_pref': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'observationType': ('django.db.models.fields.CharField', [], {'max_length': '1', 'blank': 'True'}),
-            'rake': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'site': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'slipType': ('django.db.models.fields.CharField', [], {'max_length': '2', 'blank': 'True'}),
-            'slip_rate_category': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
-            'strike_slip_rate_max': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'strike_slip_rate_min': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'strike_slip_rate_pref': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'summary_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'vertical_slip_rate_max': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'vertical_slip_rate_min': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'vertical_slip_rate_pref': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'})
-        },
         'observations.siteobservation': {
             'Meta': {'object_name': 'SiteObservation'},
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
-            'fault_section': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['observations.FaultSection']", 'symmetrical': 'False'}),
+            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.FaultSection']", 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
@@ -228,5 +186,5 @@ class Migration(DataMigration):
             'scale': ('django.db.models.fields.BigIntegerField', [], {})
         }
     }
-
+    
     complete_apps = ['observations']
