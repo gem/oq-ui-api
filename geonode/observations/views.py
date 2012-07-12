@@ -27,6 +27,7 @@ from django.db import connection, transaction
 from geonode.observations import models
 from geonode.observations.utils import create_faultsource
 
+@csrf_exempt
 def traces(request):
 
     response = HttpResponse()
@@ -48,6 +49,7 @@ def traces(request):
 
     return response
 
+@csrf_exempt
 def faultsection(request):
     response = HttpResponse()
     if request.method == 'PUT':
@@ -73,6 +75,7 @@ def faultsection(request):
     return response
 
 
+@csrf_exempt
 def faultsource(request):
     if request.method == 'PUT':
 
@@ -84,6 +87,7 @@ def faultsource(request):
 
     return HttpResponse('ok')
     
+@csrf_exempt
 def export(request):
     if request.method == 'PUT':
         
