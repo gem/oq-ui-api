@@ -7,9 +7,8 @@ from django.db import models
 class Migration(DataMigration):
     
     def forwards(self, orm):
-        from django.core.management import call_command
-        call_command("loaddata", "observations/fixtures/faulted_earth_dev.json")
-    
+        pass
+
     def backwards(self, orm):
         pass
     

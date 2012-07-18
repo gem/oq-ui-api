@@ -18,10 +18,6 @@
 
 from django.contrib.gis.db import models
 
-#observation db
-#fault tables
-
-
 class FaultSource(models.Model):
     fault = models.ForeignKey('Fault')
     source_nm  = models.CharField(max_length=30)
