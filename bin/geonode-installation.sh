@@ -20,7 +20,7 @@ export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=site-obs
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v1.0.0
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=site-obs
 
 export GEM_DB_NAME="geonode"
 
