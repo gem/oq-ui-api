@@ -496,13 +496,6 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         echo "geoserver configuration file not found"
         return 6
     fi
-    for conf_file in /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml /etc/geonode/geoserver/web.xml; do
-        fname="$(basename "$conf_file")"
-        cat "$conf_file" | \
-        sed -n '/^.*<param-name>GEONODE_BASE_URL<\/param-name>/{p;n;x;d};p'   | sed "s@^\( *\)\(<param-name>GEONODE_BASE_URL</param-name>.*\)@\1\2\n\1<param-value>http://$SITE_HOST/</param-value>@g" | \
-        sed -n '/^.*<param-name>GEOSERVER_DATA_DIR<\/param-name>/{p;n;x;d};p' | sed "s@^\( *\)\(<param-name>GEOSERVER_DATA_DIR</param-name>.*\)@\1\2\n\1<param-value>/var/lib/tomcat6/webapps/geoserver/data/</param-value>@g" > $GEM_TMPDIR/${fname}.new
-        cp $GEM_TMPDIR/${fname}.new "$conf_file"
-    done
 
     tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
     service tomcat6 start
