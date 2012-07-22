@@ -28,7 +28,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django_schemata.postgresql_backend',
-        'NAME': 'geonode_dev',              # Or path to database file if using sqlite3.
+        'NAME': 'geonode',              # Or path to database file if using sqlite3.
         'USER': 'postgres',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
