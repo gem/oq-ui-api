@@ -25,9 +25,10 @@ from django.db import models
 class Migration(DataMigration):
     
     def forwards(self, orm):
-        from django.core.management import call_command
-        call_command("loaddata", "geodetic_fixtures.json")
-    
+        # This was the old stratagy for loading the fixtures using Django 1.2
+        # from django.core.management import call_command
+        #call_command("loaddata", "geodetic_fixtures.json")
+        pass
     
     def backwards(self, orm):
         "Write your backwards methods here."
