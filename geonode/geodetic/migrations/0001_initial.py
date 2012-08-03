@@ -41,8 +41,9 @@ class Migration(SchemaMigration):
             ('cc_xx_xy', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('cc_yy_xy', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('x_azimuth', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-            ('exx_psr', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-            ('eyy_psr', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('principal_exx', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('principal_eyy', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('second_inv', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('the_geom', self.gf('django.contrib.gis.db.models.fields.PointField')(dim=2)),
             ))
         db.send_create_signal('geodetic', ['Geodetic'])
@@ -71,8 +72,9 @@ class Migration(SchemaMigration):
             'cc_xx_xy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'cc_yy_xy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'x_azimuth': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'exx_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'eyy_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'principal_exx': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'principal_eyy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'second_inv': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'the_geom': ('django.contrib.gis.db.models.fields.PointField', [], {'dim': '2'})
         }
     }

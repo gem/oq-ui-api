@@ -25,9 +25,10 @@ from django.db import models
 class Migration(DataMigration):
     
     def forwards(self, orm):
-        from django.core.management import call_command
-        call_command("loaddata", "geodetic_fixtures.json")
-    
+        # This was the old stratagy for loading the fixtures using Django 1.2
+        # from django.core.management import call_command
+        #call_command("loaddata", "geodetic_fixtures.json")
+        pass
     
     def backwards(self, orm):
         "Write your backwards methods here."
@@ -39,10 +40,11 @@ class Migration(DataMigration):
             'cc_xx_yy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'cc_yy_xy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'exx': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'exx_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'principal_exx': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'exy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'eyy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'eyy_psr': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'principal_eyy': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'second_inv': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'gid': ('django.db.models.fields.IntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'lat': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
