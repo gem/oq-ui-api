@@ -17,10 +17,11 @@ export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
 export       GEM_OQ_UI_API_GIT_VERS=https-issue_1032536
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
-export    GEM_OQ_UI_CLIENT_GIT_VERS=v1.1.0
+export    GEM_OQ_UI_CLIENT_GIT_VERS=https-issue_1032536
+export    GEM_OQ_UI_CLIENT_GIT_VERS=
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=https-issue_1032536
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=v1.1.0
 
 export GEM_DB_NAME="geonode"
 
