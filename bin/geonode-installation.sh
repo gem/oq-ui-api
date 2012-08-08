@@ -14,13 +14,13 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v1.1.0
+export       GEM_OQ_UI_API_GIT_VERS=rest-api-style
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=v1.1.0
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v1.1.0
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=rest-api-style
 
 export GEM_DB_NAME="geonode"
 
@@ -531,7 +531,12 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         sleep 20
     done
     deactivate
-    
+
+    #
+    #  customization of geoserver using the rest API
+    cd "$norm_dir/oq-ui-geoserver"
+    make populate
+    cd -
 
 #
 #  THE END
