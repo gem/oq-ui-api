@@ -113,7 +113,7 @@ cp "${norm_dir}private_data/$GEM_CA_CERT" /etc/ssl/certs/
 chown root:root "/etc/ssl/certs/$GEM_CA_CERT"
 chmod 644 "/etc/ssl/certs/$GEM_CA_CERT"
 
-for cacerts in /var/lib/geonode/build/httplib2/python2/httplib2/cacerts.txt /var/lib/geonode/build/httplib2/python3/httplib2/cacerts.txt /usr/share/pyshared/httplib2/cacerts.txt /usr/lib/python2.6/dist-packages/httplib2/cacerts.txt /usr/lib/python2.7/dist-packages/httplib2/cacerts.txt; do
+for cacerts in /var/lib/geonode/build/httplib2/python2/httplib2/cacerts.txt /var/lib/geonode/build/httplib2/python3/httplib2/cacerts.txt /usr/share/pyshared/httplib2/cacerts.txt /usr/lib/python2.6/dist-packages/httplib2/cacerts.txt /usr/lib/python2.7/dist-packages/httplib2/cacerts.txt /var/lib/geonode/local/lib/python2.7/site-packages/httplib2/cacerts.txt; do
     if [ -f "$cacerts" ]; then
         grep -q "/etc/ssl/certs/$GEM_CERT_CRT" "$cacerts"
         if [ $? -ne 0 ]; then
