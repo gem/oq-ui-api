@@ -7,6 +7,10 @@
 #    Configuration file manglings are done only if they not appear already made.
 #
 
+# TIPS
+#    to remove all:
+# apt-get remove --purge geonode ; rm -rf ./oq-ui-api/ oq-ui-client/ oq-ui-geoserver/ gem_tmp/ django-schemata/ /var/lib/openquake/* /etc/geonode
+
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
@@ -218,6 +222,7 @@ geonode_installation () {
     # Get django superuser password
     while [ true ]; do
         read -s -p "MANDATORY: django superuser password (not displayed): " newval
+        echo
         if [ "$newval" != "" ]; then
             break
         fi
@@ -549,10 +554,10 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         # "python ./manage.py dumpdata --format=json auth >users_data.json"
         python ./manage.py loaddata "$norm_dir/private_data/users_data.json"
     fi
-    python ./manage.py createsuperuser --noinput "--username=$GEM_DJANGO_SUSER" "--email=GEM_DJANGO_SMAIL" 2>/dev/null
+    python ./manage.py createsuperuser --noinput "--username=$GEM_DJANGO_SUSER" "--email=$GEM_DJANGO_SMAIL" 2>/dev/null
 
     python ./manage.py dumpdata auth.user > "$norm_dir/$GEM_TMPDIR/auth.user.json"
-    suser_hash_pass="$(python -c "from django.contrib.auth.hashers import PBKDF2PasswordHasher as hasher ; a = hasher() ; h = a.encode('gollox', a.salt()) ; print h")"
+    suser_hash_pass="$(python -c "from django.contrib.auth.hashers import PBKDF2PasswordHasher as hasher ; a = hasher() ; h = a.encode('$GEM_DJANGO_SPASS', a.salt()) ; print h" | sed 's@/@\\/@g')"
 
     # change the password to the superuser and add superuser perms
     # to eventually previous defined user with the same name
