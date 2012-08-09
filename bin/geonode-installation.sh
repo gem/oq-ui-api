@@ -216,7 +216,7 @@ geonode_installation () {
     export GEM_DJANGO_SUSER
 
     # Get django superuser password
-    while [ true ]; then
+    while [ true ]; do
         read -p "MANDATORY: django superuser password: " newval
         if [ "$newval" != "" ]; then
             break
