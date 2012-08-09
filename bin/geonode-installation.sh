@@ -217,7 +217,7 @@ geonode_installation () {
 
     # Get django superuser password
     while [ true ]; do
-        read -p "MANDATORY: django superuser password: " newval
+        read -s -p "MANDATORY: django superuser password (not displayed): " newval
         if [ "$newval" != "" ]; then
             break
         fi
