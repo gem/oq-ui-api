@@ -7,6 +7,10 @@
 #    Configuration file manglings are done only if they not appear already made.
 #
 
+# TIPS
+#    to remove all:
+# apt-get remove --purge geonode ; rm -rf ./oq-ui-api/ oq-ui-client/ oq-ui-geoserver/ gem_tmp/ django-schemata/ /var/lib/openquake/* /etc/geonode
+
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
@@ -14,13 +18,13 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export       GEM_OQ_UI_API_GIT_REPO=git://github.com/gem/oq-ui-api.git
-export       GEM_OQ_UI_API_GIT_VERS=v1.1.0
+export       GEM_OQ_UI_API_GIT_VERS=rest-api-style
 
 export    GEM_OQ_UI_CLIENT_GIT_REPO=git://github.com/gem/oq-ui-client.git
 export    GEM_OQ_UI_CLIENT_GIT_VERS=v1.1.0
 
 export GEM_OQ_UI_GEOSERVER_GIT_REPO=git://github.com/gem/oq-ui-geoserver.git
-export GEM_OQ_UI_GEOSERVER_GIT_VERS=v1.1.0
+export GEM_OQ_UI_GEOSERVER_GIT_VERS=rest-api-style
 
 export GEM_DB_NAME="geonode"
 
@@ -29,6 +33,9 @@ export GEM_DB_NAME="geonode"
 export GEM_DB_USER="geonode"
 export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
+export GEM_DJANGO_SUSER="$1"
+export GEM_DJANGO_SPASS=""
+export GEM_DJANGO_SMAIL="$1@$(hostname)"
 export GEM_TMPDIR="gem_tmp"
 # GEM_BASEDIR ==REQUIRES== "/" at the end
 export GEM_BASEDIR="/var/lib/openquake/"
@@ -196,12 +203,39 @@ geonode_installation () {
     fi
 
     # Get public name info
-    defa="$GEM_HOSTNAME"
-    read -p "Public site url or public IP address [$defa]: " SITE_HOST
-    if [ "$SITE_HOST" = "" ]; then
-        SITE_HOST="$defa"
+    SITE_HOST="$GEM_HOSTNAME"
+    read -p "Public site url or public IP address (start with '.' to add domain) [$SITE_HOST]: " newval
+    if [ "$(echo "$newval" | cut -c 1)" = "." ]; then
+        SITE_HOST="${SITE_HOST}${newval}"
+    elif [ "$newval" != "" ]; then
+        SITE_HOST="$newval"
     fi
     export SITE_HOST
+
+    # Get django superuser name
+    read -p "MANDATORY: django superuser name [$GEM_DJANGO_SUSER]: " newval
+    if [ "$newval" != "" ]; then
+        GEM_DJANGO_SUSER="$newval"
+    fi
+    export GEM_DJANGO_SUSER
+
+    # Get django superuser password
+    while [ true ]; do
+        read -s -p "MANDATORY: django superuser password (not displayed): " newval
+        echo
+        if [ "$newval" != "" ]; then
+            break
+        fi
+    done
+    GEM_DJANGO_SPASS="$newval"
+    export GEM_DJANGO_SPASS
+
+    # Get django superuser email
+    read -p "Django superuser email [$GEM_DJANGO_SMAIL]: " newval
+    if [ "$newval" != "" ]; then
+        GEM_DJANGO_SMAIL="$newval"
+    fi
+    export GEM_DJANGO_SMAIL
 
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
@@ -519,9 +553,17 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         # this json data below are generated in the previous installation with
         # "python ./manage.py dumpdata --format=json auth >users_data.json"
         python ./manage.py loaddata "$norm_dir/private_data/users_data.json"
-    else
-        python ./manage.py createsuperuser
     fi
+    python ./manage.py createsuperuser --noinput "--username=$GEM_DJANGO_SUSER" "--email=$GEM_DJANGO_SMAIL" 2>/dev/null
+
+    python ./manage.py dumpdata auth.user > "$norm_dir/$GEM_TMPDIR/auth.user.json"
+    suser_hash_pass="$(python -c "from django.contrib.auth.hashers import PBKDF2PasswordHasher as hasher ; a = hasher() ; h = a.encode('$GEM_DJANGO_SPASS', a.salt()) ; print h" | sed 's@/@\\/@g')"
+
+    # change the password to the superuser and add superuser perms
+    # to eventually previous defined user with the same name
+    cat "$norm_dir/$GEM_TMPDIR/auth.user.json" | sed "s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"password\": \)\"[^\"]*\"/\1\"$suser_hash_pass\"/g;s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"is_superuser\": \)[^,]*,/\1true,/g" > "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
+    python ./manage.py loaddata "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
+
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
 	python ./manage.py updatelayers
@@ -531,7 +573,12 @@ git checkout $GEM_OQ_UI_GEOSERVER_GIT_VERS
         sleep 20
     done
     deactivate
-    
+
+    #
+    #  customization of geoserver using the rest API
+    cd "$norm_dir/oq-ui-geoserver"
+    make populate
+    cd -
 
 #
 #  THE END
