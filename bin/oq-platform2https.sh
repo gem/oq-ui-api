@@ -3,7 +3,7 @@
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_CERT_KEY=oq-platform.key
 export GEM_CERT_CRT=oq-platform.crt
-export GEM_CA_CERT=gem_ca.pem
+export GEM_CA_CERT=oq-platform_CA.pem
 export GEM_APACHE_CONF=/etc/apache2/sites-available/geonode
 export GEM_TOMCAT_CONF="/var/lib/tomcat6/conf/server.xml"
 export GEM_GEOSERVER_CONFIG="/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml"
