@@ -59,8 +59,8 @@ if [ "$1" = "revert" ]; then
 
     echo "The keystore password for the keytool command below is 'changeit'."
     # keytool -delete -noprompt -alias <alias_name> -keystore /etc/ssl/certs/java/cacerts
-    keytool -delete -noprompt -alias gem_ca -keystore /etc/ssl/certs/java/cacerts 
-    keytool -delete -noprompt -alias geonodessl -trustcacerts -keystore /etc/ssl/certs/java/cacerts 
+    keytool -delete -noprompt -alias gem_ca -keystore /etc/ssl/certs/java/cacerts
+    keytool -delete -noprompt -alias geonodessl -trustcacerts -keystore /etc/ssl/certs/java/cacerts
 
     service tomcat6 start
     service apache2 start

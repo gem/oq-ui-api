@@ -1,6 +1,6 @@
  ====
 
-  * ubuntu 11.04 (codename oneiric ocelot)
+  * Operative System: GNU-Linux Ubuntu 12.04 (codename: Precise Pangolin)
   * a user account within 'admin' group
   * the 'git' package installed on the machine
   * an internet connection
